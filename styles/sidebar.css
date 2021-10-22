@@ -1,0 +1,72 @@
+.side-bar {
+  width: 30%;
+  border-top: 1px solid #eee;
+  background-color: #fafafa;
+  float: left;
+}
+.side-bar a {
+  color: #808080;
+}
+.side-bar .title {
+  color: #808080;
+  font-family: Montserrat;
+  margin: 15px 0;
+}
+.side-bar .avator {
+  padding-top: 50px;
+  width: 90%;
+  margin: 0 auto;
+}
+.side-bar .avator .site-a-logo {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+.side-bar .avator .ava-img {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 50%;
+}
+.side-bar .avator .title {
+  margin: 0;
+  padding: 0;
+  padding-top: 25px;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: "jaf-bernino-sans", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+  letter-spacing: 0.1rem;
+  color: #444;
+  line-height: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+.side-bar .avator .author {
+  padding: 8px 0;
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+}
+.side-bar .avator .icon-list {
+  display: flex;
+  justify-content: flex-start;
+  border-top: 1px solid #eee;
+}
+.side-bar .avator .icon-list .icon-item {
+  width: 10px;
+  height: 10px;
+  margin: 4px 25px 4px 2px;
+}
+@media only screen and (max-width: 750px) {
+  #avator {
+    display: none;
+  }
+  .posts-wrapper {
+    width: 100%;
+  }
+  ._toc {
+    display: none;
+  }
+  ._toc {
+    display: none;
+  }
+}
