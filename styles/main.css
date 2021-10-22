@@ -501,7 +501,7 @@ pre {
   position: absolute;
   top: 203px;
   width: 200px;
-  margin-left: 1040px;
+  margin-left: 1100px;
   border-left: 1px solid #eee;
   padding-left: 9px;
 }
@@ -543,7 +543,7 @@ pre {
 }
 .side-bar .avator {
   padding-top: 50px;
-  width: 200px;
+  width: 90%;
   margin: 0 auto;
 }
 .side-bar .avator .site-a-logo {
@@ -599,13 +599,48 @@ pre {
     display: none;
   }
 }
-.tags h3 {
-  color: #808080;
-  border-bottom: 1px solid #eee;
+.side-item {
+  padding-top: 40px;
 }
-.tags .tag-list .tag-list-count {
-  vertical-align: super;
-  font-size: 0.6em;
-  opacity: 0.6;
-  top: -0.5em;
+.side-item .side-header {
+  border-top: solid 1px #eee;
+  height: 52px;
+  position: relative;
+}
+.side-item .side-header h2 {
+  margin: 0;
+  padding: 0;
+  padding-top: 14px;
+  position: absolute;
+  top: -1px;
+  border-top: solid 1px #868686;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-family: "jaf-bernino-sans", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+  letter-spacing: 0.1rem;
+  line-height: 1rem;
+  font-weight: 700;
+}
+.side-item .side-content>.cat-list {
+  padding: 0;
+  margin: 0;
+}
+.side-item .side-content>.cat-list a {
+  display: inline-block;
+  color: rgba(0,0,0,0.6);
+  background: rgba(255,255,255,0.97);
+  font-family: "jaf-bernino-sans", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+  letter-spacing: -0.02rem;
+  font-weight: 400;
+  font-style: normal;
+  color: rgba(0,0,0,0.44);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-decoration: none;
+  border-radius: 3px;
+  border: 1px solid #f0f0f0;
+  padding: 5px 10px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  line-height: 22px;
 }
