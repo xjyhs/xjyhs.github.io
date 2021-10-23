@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>对象注入与线程安全 | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        对象注入与线程安全
+    </div>
+    <div class="post-content">
+        <h1 id="对象注入与线程安全"><a href="#对象注入与线程安全" class="headerlink" title="对象注入与线程安全"></a>对象注入与线程安全</h1><p>####前言<br>在java web项目中，经常会看到如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XXXController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line">	</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么：多个http请求共用一个request对象，是线程安全的么？一个对象又怎么保证多个http请求不同的数据？</p>
+<span id="more"></span>
+<p>spring毫无疑问是线程安全的，在这种大的问题上它不可能犯低级错误</p>
+<p>但肉眼来讲，这种方式是不安全的，多个请求共用一个request对象，在并发时肯定会乱套，那么。。。spring是如何实现的？</p>
+<p>####跟踪spring源码<br>先打个断点，看一下request是个什么东西<br><img src="D:/soft/OneDrive/blog/source/_posts/media/14767568362077/14767811852033.jpg"></p>
+<p>如图所见，request是一个被<strong>ObjectFactoryDelegatingInvocationHandler</strong>类所代理的对象<br>对request的任何操作，都讲变成对<strong>RequestObjectFactory</strong>的操作<br>代理类无非就是个反射执行的功能，这里并不关注，真正需要关注的是<strong>RequestObjectFactory</strong>的内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">WebRequestObjectFactory</span> <span class="keyword">implements</span> <span class="title">ObjectFactory</span>&lt;<span class="title">WebRequest</span>&gt;, <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">WebRequestObjectFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> WebRequest <span class="title">getObject</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        	<span class="comment">//这里调用了一个static的方法</span></span><br><span class="line">            ServletRequestAttributes requestAttr = WebApplicationContextUtils.currentRequestAttributes();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ServletWebRequest(requestAttr.getRequest(), requestAttr.getResponse());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;Current ServletWebRequest&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>RequestObjectFactory十分简洁，里面只有一个getObject()函数，里面调用了**WebApplicationContextUtils.currentRequestAttributes()**函数，继续下跟，看一下这个函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> ServletRequestAttributes <span class="title">currentRequestAttributes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//依然是一个static的调用</span></span><br><span class="line">        RequestAttributes requestAttr = RequestContextHolder.currentRequestAttributes();</span><br><span class="line">        <span class="keyword">if</span>(!(requestAttr <span class="keyword">instanceof</span> ServletRequestAttributes)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Current request is not a servlet request&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> (ServletRequestAttributes)requestAttr;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>还是很简洁的方法，只有一个方法调用，继续下跟：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestAttributes <span class="title">currentRequestAttributes</span><span class="params">()</span> <span class="keyword">throws</span> IllegalStateException </span>&#123;</span><br><span class="line">		<span class="comment">//类的内部调用</span></span><br><span class="line">        RequestAttributes attributes = getRequestAttributes();</span><br><span class="line">        <span class="keyword">if</span>(attributes == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span>(jsfPresent) &#123;</span><br><span class="line">                attributes = RequestContextHolder.FacesRequestAttributesFactory.getFacesRequestAttributes();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(attributes == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;No thread-bound request found: Are you referring to request attributes outside of an actual web request, or processing a request outside of the originally receiving thread? If you are actually operating within a web request and still receive this message, your code is probably running outside of DispatcherServlet/DispatcherPortlet: In this case, use RequestContextListener or RequestContextFilter to expose the current request.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> attributes;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里调用了类内部的**getRequestAttributes()**函数，感觉已经到了正题，继续跟进：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestAttributes <span class="title">getRequestAttributes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//类的成员变量调用</span></span><br><span class="line">        RequestAttributes attributes = (RequestAttributes)requestAttributesHolder.get();</span><br><span class="line">        <span class="keyword">if</span>(attributes == <span class="keyword">null</span>) &#123;</span><br><span class="line">            attributes = (RequestAttributes)inheritableRequestAttributesHolder.get();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> attributes;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在这个函数中，调用了一个成员变量<strong>requestAttributesHolder</strong>，它的定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;RequestAttributes&gt; requestAttributesHolder = <span class="keyword">new</span> NamedThreadLocal(<span class="string">&quot;Request attributes&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>答案已经呼之欲出，spring使用了java动态代理来获取ThreadLocal中的RequestAttributes对象，所以代码对request的任何操作，都会变成对ThreadLocal存储的request的操作。</p>
+<p>这种方式，毫无疑问是线程安全的。</p>
+<p>####总结<br>注入一个代理对象，使任何操作变成对ThreadLocal中对象的操作，这是一种非常优雅的方式，即提供了方便的调用，又保证了线程的安全。在日常的框架集成工作中，用这种思想，可以起到非常好的效果。</p>
+<p>在搭建即时通讯服务的框架时，就用到了这种思想，gateway放弃对二进制数据的反序列化，直接将二进制数据传给业务模块，在业务模块中，只需要注入相应的protobuf协议，就可使用该对象，接收二进制数据、反序列化都在代理类中进行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ServiceProvider</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GetMsgRequestServiceImpl</span> <span class="keyword">implements</span> <span class="title">IGetMsgRequestService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ProtocolAutowired</span></span><br><span class="line">    <span class="keyword">private</span> Protocol.GetMsgRequestOrBuilder getMsgRequest;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+	<p class="sub">Oct 18 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5%E4%B8%8E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-text">对象注入与线程安全</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/java/">java</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2021/10/22/Mysql-sequence/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">MySQL流水号</span>
+            </a>
+        
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

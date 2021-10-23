@@ -73,6 +73,39 @@
 			<p class="sub"></p>
         </article>
     
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/18/ObjectInjection/">对象注入与线程安全</a>
+            </div>
+            <div class="post-content">
+                
+                    <h1 id="对象注入与线程安全"><a href="#对象注入与线程安全" class="headerlink" title="对象注入与线程安全"></a>对象注入与线程安全</h1><p>####前言<br>在java web项目中，经常会看到如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XXXController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line">	</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么：多个http请求共用一个request对象，是线程安全的么？一个对象又怎么保证多个http请求不同的数据？</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/18/ObjectInjection/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/18</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/java/">java</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/18/ObjectInjection/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
 </div>
 <div class="side-bar">
 
@@ -101,6 +134,8 @@
 		<p class="cat-list">
 			
                     <a href="/tags/MySQL/"><strong>MySQL</strong></a>
+			
+                    <a href="/tags/java/"><strong>java</strong></a>
 			
 		</p>
         
