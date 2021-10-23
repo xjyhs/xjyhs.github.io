@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-字符输入流Reader | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-字符输入流Reader
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>读取字符流的抽象类<br>Reader定义了在流中读取字符的功能。</p>
+</blockquote>
+<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Reader</span> <span class="keyword">implements</span> <span class="title">Readable</span>, <span class="title">Closeable</span></span></span><br></pre></td></tr></table></figure>
+
+<p>Reader是一个抽象类，它定义了所有Reader的主要功能，实现了Readable，Closeable两个接口。<br>Readable：是为java5中为nio扩展的一个接口，它使Reader可以将数据读取到java.nio.CharBuffer中<br>Closeable：java5中增加的接口，描述这是可以关闭的资源，用于资源的自动关闭（try-with-resource）</p>
+<span id="more"></span>
+
+<h3 id="Reader常用方法"><a href="#Reader常用方法" class="headerlink" title="Reader常用方法"></a>Reader常用方法</h3><h4 id="read"><a href="#read" class="headerlink" title="read"></a>read</h4><p>read方法共有4个重载：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//读取一个字符</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//将字符读入数组，并返回读取字符个数</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">char</span> cbuf[])</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//将字符读入数组的某一部分，返回读取字符个数，由子类具体实现，以适应各种媒介</span></span></span><br><span class="line"><span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">char</span> cbuf[], <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//将字符读入CharBuffer中，来支持nio</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(java.nio.CharBuffer target)</span> <span class="keyword">throws</span> IOException</span></span><br></pre></td></tr></table></figure>
+
+<p>使用举例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Reader reader = <span class="keyword">new</span> FileReader(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">char</span>[] str = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">1024</span>];</span><br><span class="line">  <span class="keyword">int</span> length = reader.read(str);</span><br><span class="line">  <span class="keyword">while</span>(length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      System.out.print(<span class="keyword">new</span> String(str, <span class="number">0</span>, length));</span><br><span class="line">      length = reader.read(str);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="skip"><a href="#skip" class="headerlink" title="skip"></a>skip</h4><p>Reader在内部为skip增加了缓冲：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** 缓冲大小 */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> maxSkipBufferSize = <span class="number">8192</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 缓冲区 */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">char</span> skipBuffer[] = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">skip</span><span class="params">(<span class="keyword">long</span> n)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (n &lt; <span class="number">0L</span>)</span><br><span class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;skip value is negative&quot;</span>);</span><br><span class="line">   <span class="comment">//缓冲区与跳过字符数较小值</span></span><br><span class="line">   <span class="keyword">int</span> nn = (<span class="keyword">int</span>) Math.min(n, maxSkipBufferSize);</span><br><span class="line">   <span class="keyword">synchronized</span> (lock) &#123;</span><br><span class="line">       <span class="keyword">if</span> ((skipBuffer == <span class="keyword">null</span>) || (skipBuffer.length &lt; nn))</span><br><span class="line">           skipBuffer = <span class="keyword">new</span> <span class="keyword">char</span>[nn];</span><br><span class="line">       <span class="keyword">long</span> r = n;</span><br><span class="line">       <span class="keyword">while</span> (r &gt; <span class="number">0</span>) &#123;</span><br><span class="line">       		<span class="comment">//一次性读取（跳过）nn个字符</span></span><br><span class="line">           <span class="keyword">int</span> nc = read(skipBuffer, <span class="number">0</span>, (<span class="keyword">int</span>)Math.min(r, nn));</span><br><span class="line">           <span class="keyword">if</span> (nc == -<span class="number">1</span>)</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="comment">//计算还需要跳过多少字符</span></span><br><span class="line">           r -= nc;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> n - r;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="ready"><a href="#ready" class="headerlink" title="ready"></a>ready</h4><p>ready用来判断下一次读取是否可能阻塞，不会阻塞返回true，可能阻塞返回false。</p>
+<p>该方法由子类具体实现，Reader直接返回false。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">ready</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h4><p>Reader用来装饰InputStream，所以它也定义了markSupported、mark、reset功能，这些在Reader中并未具体实现。</p>
+
+    </div>
+	<p class="sub">Nov 09 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%AE%9A%E4%B9%89"><span class="toc-text">类定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reader%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-text">Reader常用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#read"><span class="toc-text">read</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#skip"><span class="toc-text">skip</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ready"><span class="toc-text">ready</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E5%AE%83"><span class="toc-text">其它</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/11/11/IO/20.FileWriter/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-FileWriter</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/11/07/IO/14.ObjectOutputStream/">
+                
+                <span class="prev-text">io-对象输出流ObjectOutputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

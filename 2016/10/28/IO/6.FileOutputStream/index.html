@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-文件输出流FileOutputStream | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-文件输出流FileOutputStream
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>FileOutputSream是最常用的文件写入类，它以文件流的形式进行文件的写入。<br>同FileInputStream，核心的实现都交由了其它语言。</p>
+</blockquote>
+<h3 id="FileOutputStream的基本使用"><a href="#FileOutputStream的基本使用" class="headerlink" title="FileOutputStream的基本使用"></a>FileOutputStream的基本使用</h3><h4 id="覆盖文件"><a href="#覆盖文件" class="headerlink" title="覆盖文件"></a>覆盖文件</h4><p>OutputStream默认覆盖文件，即清空文件原有数据后写入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h4 id="追加文件"><a href="#追加文件" class="headerlink" title="追加文件"></a>追加文件</h4><p>在需要追加内容到文件尾部时，可以指定append参数值为true：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>, <span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="写入数据"><a href="#写入数据" class="headerlink" title="写入数据"></a>写入数据</h4><p>write方法可以将指定的字节写入此输入流，接收int类型数据，但写入的字节是int类型的后8位，前24位将忽略：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">byte</span>[] data = <span class="string">&quot;test&quot;</span>.getBytes();</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">byte</span> b : data) &#123;</span><br><span class="line">      <span class="comment">//循环写入一个字节</span></span><br><span class="line">      outputStream.write(b);</span><br><span class="line">  &#125;</span><br><span class="line">  outputStream.flush();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以进行批量的写入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">byte</span>[] data = <span class="string">&quot;test2&quot;</span>.getBytes();</span><br><span class="line">  <span class="comment">//写入一个数组</span></span><br><span class="line">  outputStream.write(data);</span><br><span class="line">  outputStream.flush();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者写入一个数组的一部分：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">byte</span>[] data = <span class="string">&quot;test3&quot;</span>.getBytes();</span><br><span class="line">  <span class="comment">//写入一个数组的一部分，参数分别为数据、偏移量、长度</span></span><br><span class="line">  outputStream.write(data, <span class="number">0</span>, <span class="number">4</span>);</span><br><span class="line">  outputStream.flush();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="flush数据"><a href="#flush数据" class="headerlink" title="flush数据"></a>flush数据</h4><p>将流中所有缓冲数据写入到硬盘。</p>
+<h4 id="关闭资源"><a href="#关闭资源" class="headerlink" title="关闭资源"></a>关闭资源</h4><p>关闭此输出流，并释放相关的系统资源。建议使用<a href="14773845321214.html">try-with-resource</a></p>
+<h3 id="关于FileOutputStream的疑问"><a href="#关于FileOutputStream的疑问" class="headerlink" title="关于FileOutputStream的疑问"></a>关于FileOutputStream的疑问</h3><p>与<a href="14775367060538.html">FileInputStream</a>疑问相同，略。</p>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 28 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#FileOutputStream%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">FileOutputStream的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E6%96%87%E4%BB%B6"><span class="toc-text">覆盖文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%BD%E5%8A%A0%E6%96%87%E4%BB%B6"><span class="toc-text">追加文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-text">写入数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#flush%E6%95%B0%E6%8D%AE"><span class="toc-text">flush数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E8%B5%84%E6%BA%90"><span class="toc-text">关闭资源</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EFileOutputStream%E7%9A%84%E7%96%91%E9%97%AE"><span class="toc-text">关于FileOutputStream的疑问</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/28/IO/5.OutputStream/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-输出流OutputStream</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/">
+                
+                <span class="prev-text">io-缓冲输入流BufferedInputStream与FilterInputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

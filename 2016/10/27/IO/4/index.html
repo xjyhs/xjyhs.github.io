@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-文件输入流FileInputStream | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-文件输入流FileInputStream
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>FileInputStream是最常用的操作文件类之一，它以字节流的形式读取文件内容。<br>源码中没看到太多东西，核心的实现交给了其它语言。</p>
+</blockquote>
+<h3 id="FileInputStream的基本使用"><a href="#FileInputStream的基本使用" class="headerlink" title="FileInputStream的基本使用"></a>FileInputStream的基本使用</h3><h4 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h4><p>常用的只有两种构造函数，可根据情况选择合适的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//文件字符串</span></span><br><span class="line">InputStream inputStream1 = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//file对象</span></span><br><span class="line">File file = <span class="keyword">new</span> File(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line">InputStream inputStream2 = <span class="keyword">new</span> FileInputStream(file);</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+
+<h4 id="read方法"><a href="#read方法" class="headerlink" title="read方法"></a>read方法</h4><p>FileInputStream的read方法返回含一个字节内容的int变量（范围为0~255），可用强制类型转换将其转成byte类型，当读取到文件结尾，将返回-1。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">	<span class="comment">//读取一个字节</span></span><br><span class="line">  <span class="keyword">int</span> read = inputStream.read();</span><br><span class="line">  <span class="comment">//循环读取，直到文件结束</span></span><br><span class="line">  <span class="keyword">while</span>(read != -<span class="number">1</span>) &#123;</span><br><span class="line">      System.out.print((<span class="keyword">char</span>)read);</span><br><span class="line">      read = inputStream.read();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以用下面的方式进行批量读取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">  <span class="comment">//最多读取1024个字节，返回读取字节数，没读取到任何字节，返回0</span></span><br><span class="line">  <span class="keyword">int</span> num = inputStream.read(b);</span><br><span class="line">  <span class="comment">//循环读取至无字节可读取</span></span><br><span class="line">  <span class="keyword">while</span>(num &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      System.out.println(<span class="keyword">new</span> String(b, <span class="number">0</span> , num));</span><br><span class="line">      num = inputStream.read(b);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="FileInputSteam源码"><a href="#FileInputSteam源码" class="headerlink" title="FileInputSteam源码"></a>FileInputSteam源码</h3><h4 id="native关键字"><a href="#native关键字" class="headerlink" title="native关键字"></a>native关键字</h4><p>在FileInputStream中所有的核心方法都被native关键字修饰，这些方法的具体实现是用的其它语言（应该是c或c++）,java本身并不能对操作系统底层进行访问，但可以通过JNI接口调用其它语言来实现。</p>
+<p><strong>注：失落，没看到里面的逻辑。</strong></p>
+<h3 id="关于FileInputStream的疑问"><a href="#关于FileInputStream的疑问" class="headerlink" title="关于FileInputStream的疑问"></a>关于FileInputStream的疑问</h3><h4 id="closed变量有必要使用volatile关键字么？"><a href="#closed变量有必要使用volatile关键字么？" class="headerlink" title="closed变量有必要使用volatile关键字么？"></a>closed变量有必要使用volatile关键字么？</h4><p>FileInputStream类中的close方法定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Object closeLock = <span class="keyword">new</span> Object();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> closed = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">synchronized</span> (closeLock) &#123;</span><br><span class="line">       <span class="keyword">if</span> (closed) &#123;</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       closed = <span class="keyword">true</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> (channel != <span class="keyword">null</span>) &#123;</span><br><span class="line">      channel.close();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   fd.closeAll(<span class="keyword">new</span> Closeable() &#123;</span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">          close0();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在close方法的开头，使用了synchronized同步代码块，这意味着同时只能有一个线程来改变closed的状态，其它的线程都会直接返回。</p>
+<p><strong>closed变量在这里有必要使用volatile关键字来修饰么？</strong></p>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 27 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#FileInputStream%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">FileInputStream的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="toc-text">构造函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#read%E6%96%B9%E6%B3%95"><span class="toc-text">read方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FileInputSteam%E6%BA%90%E7%A0%81"><span class="toc-text">FileInputSteam源码</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#native%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-text">native关键字</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EFileInputStream%E7%9A%84%E7%96%91%E9%97%AE"><span class="toc-text">关于FileInputStream的疑问</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#closed%E5%8F%98%E9%87%8F%E6%9C%89%E5%BF%85%E8%A6%81%E4%BD%BF%E7%94%A8volatile%E5%85%B3%E9%94%AE%E5%AD%97%E4%B9%88%EF%BC%9F"><span class="toc-text">closed变量有必要使用volatile关键字么？</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/27/IO/4.FileInputStream/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-文件输入流FileInputStream</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/26/2016/try-with-finally/">
+                
+                <span class="prev-text">try-with-finally异常处理</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

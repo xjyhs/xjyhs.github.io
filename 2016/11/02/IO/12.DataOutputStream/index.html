@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-数据输出流DataOutputStream | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-数据输出流DataOutputStream
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>DataOutputStream继承于FilterOutputStream，实现了DataOutput接口<br>它为其它输出流提供了写入java基本数据类型的功能。</p>
+</blockquote>
+<p>###DataOutputStream的基本使用</p>
+<p>####创建对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DataOutputStream out = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p>不建议使用OutputStream作为对象的接收类型，那样将无法使用DataOutputStream的主要功能。</p>
+<span id="more"></span>
+
+<p>####写入数据</p>
+<p>可以使用OutputStream的写入功能：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(DataOutputStream out = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  out.write(<span class="string">&quot;test&quot;</span>.getBytes());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以写入java基本数据类型和utf-8编码数据，这些功能定义在DataOutput接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(DataOutputStream out = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  out.writeBoolean(<span class="keyword">true</span>);</span><br><span class="line">  out.writeByte(<span class="number">2</span>);</span><br><span class="line">  out.writeShort(<span class="number">3</span>);</span><br><span class="line">  out.writeChar(<span class="string">&#x27;4&#x27;</span>);</span><br><span class="line">  out.writeInt(<span class="number">5</span>);</span><br><span class="line">  out.writeLong(<span class="number">6L</span>);</span><br><span class="line">  out.writeFloat(<span class="number">7f</span>);</span><br><span class="line">  out.writeDouble(<span class="number">8d</span>);</span><br><span class="line">  out.writeUTF(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用DataOutputStream写入的基本数据类型，只能用<a href="14780567296174.html">DataInputStream</a>的相应方法进行读取，其它方式无法正常读取。</strong></p>
+<h3 id="DataOutputStream内部详解"><a href="#DataOutputStream内部详解" class="headerlink" title="DataOutputStream内部详解"></a>DataOutputStream内部详解</h3><h4 id="普通的write与writeInt的区别"><a href="#普通的write与writeInt的区别" class="headerlink" title="普通的write与writeInt的区别"></a>普通的write与writeInt的区别</h4><p><strong>write：</strong><br>一般写入的文件，要求”人”能看懂，所以要实现文件中有个”1”，在程序中会这么做：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(DataOutputStream out = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  out.write(<span class="string">&quot;1&quot;</span>.getBytes());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>人能看懂的，叫字符。</p>
+<p>字符，有相应的标准，最出名的叫ascii字符集，在中国常用的有GB2312，UTF-8等，而每台电脑有默认的字符集，在编码时如果程序中没有控制，将以默认字符集进行编码。</p>
+<p>上面以字节的形式向文件写入了一个字符”1”，”1”.getBytes()以机器默认字符集编码为字节码，打开文件时以机器默认的字符集进行了解码，所以我们打开文件能看到一个字符”1”。</p>
+<p><strong>再看writeInt：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(DataOutputStream out = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  out.writeInt(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>writeInt方法，接收了一个int类型的数值，在内部以自己的形式进行字节编码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">writeInt</span><span class="params">(<span class="keyword">int</span> v)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   out.write((v &gt;&gt;&gt; <span class="number">24</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   out.write((v &gt;&gt;&gt; <span class="number">16</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   out.write((v &gt;&gt;&gt;  <span class="number">8</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   out.write((v &gt;&gt;&gt;  <span class="number">0</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   incCount(<span class="number">4</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个编码方式是java独有的，与其它语言不同，与平台无关，与机器无关。</p>
+<p><strong>所以有这么一句话：DataOutputStream以机器无关的方式写入数据。</strong></p>
+<p>这也意味着，使用writeInt方法写入一个1，打开文件看到的并不是1</p>
+<p><strong>vim中为乱码：</strong><br><img src="http://file1.xjyhs.com/14780555818271.jpg"></p>
+<p><strong>sublime中显示为4个字节：</strong><br><img src="http://file1.xjyhs.com/14780556061457.jpg"></p>
+<h4 id="那么，可以说writeInt是机器无关，而write是机器有关么？"><a href="#那么，可以说writeInt是机器无关，而write是机器有关么？" class="headerlink" title="那么，可以说writeInt是机器无关，而write是机器有关么？"></a>那么，可以说writeInt是机器无关，而write是机器有关么？</h4><p>不可以。</p>
+<p>writeInt是机器无关的，write也是机器无关的。</p>
+<p>真正机器相关的是“1”.getByte()这句话，writeInt的数据绝对机器无关是因为它控制了数据的编码方式。</p>
+<h4 id="以int为例看编码解码"><a href="#以int为例看编码解码" class="headerlink" title="以int为例看编码解码"></a>以int为例看编码解码</h4><p>writeInt其实以java内存中int类型的存储方式进行编码，其它的基本类型也是一样。</p>
+<p><strong>int编码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">writeInt</span><span class="params">(<span class="keyword">int</span> v)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   out.write((v &gt;&gt;&gt; <span class="number">24</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   out.write((v &gt;&gt;&gt; <span class="number">16</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   out.write((v &gt;&gt;&gt;  <span class="number">8</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   out.write((v &gt;&gt;&gt;  <span class="number">0</span>) &amp; <span class="number">0xFF</span>);</span><br><span class="line">   incCount(<span class="number">4</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>int在java中以4个字节（32bit）进行存储，int转byte时，取int类型的前8bit转化为一个字节，依次往后转化，共分为4个字节。</p>
+<p><strong>int解码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num = (b1 &lt;&lt; <span class="number">24</span>) + (b2 &lt;&lt; <span class="number">16</span>) + (b3 &lt;&lt; <span class="number">8</span>) + (b4 &lt;&lt; <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>这意味着使用DataOutputStream写入的数据，与java内存中的数据一模一样，所以DataOutputStream的效率是非常高的。</strong></p>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Nov 02 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#DataOutputStream%E5%86%85%E9%83%A8%E8%AF%A6%E8%A7%A3"><span class="toc-text">DataOutputStream内部详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E7%9A%84write%E4%B8%8EwriteInt%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">普通的write与writeInt的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%82%A3%E4%B9%88%EF%BC%8C%E5%8F%AF%E4%BB%A5%E8%AF%B4writeInt%E6%98%AF%E6%9C%BA%E5%99%A8%E6%97%A0%E5%85%B3%EF%BC%8C%E8%80%8Cwrite%E6%98%AF%E6%9C%BA%E5%99%A8%E6%9C%89%E5%85%B3%E4%B9%88%EF%BC%9F"><span class="toc-text">那么，可以说writeInt是机器无关，而write是机器有关么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A5int%E4%B8%BA%E4%BE%8B%E7%9C%8B%E7%BC%96%E7%A0%81%E8%A7%A3%E7%A0%81"><span class="toc-text">以int为例看编码解码</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/11/03/IO/13.RandomAccessFile/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-随机访问文件RandomAccessFile</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/11/01/IO/11.DataInputStream/">
+                
+                <span class="prev-text">io-DataInputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

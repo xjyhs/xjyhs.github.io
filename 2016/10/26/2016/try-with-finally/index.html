@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>try-with-finally异常处理 | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        try-with-finally异常处理
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>本文以流的关闭为例进行try-with-finally异常处理分析</p>
+</blockquote>
+<h3 id="流的关闭"><a href="#流的关闭" class="headerlink" title="流的关闭"></a>流的关闭</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//业务或IO操作</span></span><br><span class="line">......</span><br><span class="line">inputStream.close();</span><br></pre></td></tr></table></figure>
+<p>这是一个典型的错误关闭，在close之前的任何操作都可能发生异常，在异常发生后，将跳出方法，close方法自然无法执行，这就造成了系统资源的泄露。</p>
+<p>为了避免这种问题，往往会使用try-catch-finally这么写：</p>
+<span id="more"></span>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line">  <span class="comment">//IO操作</span></span><br><span class="line">  ......</span><br><span class="line">&#125; <span class="keyword">catch</span>(IOException e)&#123;</span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> WrapperException(e);</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	inputStream.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种方式，看似正确关闭了资源，无论try内发生什么，finally的代码将始终执行，但实际上仍是不安全的：</p>
+<p>在上面的代码中，如果test文件不存在，我们期望报出FileNotFoundException，以便及时定位到问题，但真正报出的异常如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.NullPointerException</span><br><span class="line">	at com.xjyhs.study.Test.main(Test.java:27) </span><br></pre></td></tr></table></figure>
+
+<p>报出异常的语句是finally中的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inputStream.close();</span><br></pre></td></tr></table></figure>
+
+<p>这里存在一个非常隐蔽的问题，在try内部和finally内部同时发生异常时，该方法抛出的将是finally的异常，真正的try内异常（业务异常）被吞，或者说被抑制。</p>
+<p><strong>在异常处理中，一个重要的原则是：</strong></p>
+<blockquote>
+<p><strong>在try-catch-finally抛出的最后一个异常是将在堆栈上传播的异常，所有更早抛出的异常都会消失。</strong></p>
+</blockquote>
+<p>或许，可以继续改进：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Exception exception = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line">  <span class="comment">//IO操作</span></span><br><span class="line">  ......</span><br><span class="line">&#125; <span class="keyword">catch</span>(IOException e)&#123;</span><br><span class="line">	exception = e;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span>(inputStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">          inputStream.close();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (IOException ine) &#123;</span><br><span class="line">          <span class="keyword">if</span>(exception == <span class="keyword">null</span>) &#123;</span><br><span class="line">          		exception = ine;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(exception != <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="keyword">throw</span> exception;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上述程序，再运行，将报出FileNotFoundException。一个方法内只能抛出一个异常，这是无法改变的，但在try-catch-finally中我们可以选择在finally结束后报出异常，至少要有先来后到，这样可以准确定位到我们的问题。</p>
+<p>为了进行合适的异常处理，上面的代码非常的冗长、不优雅，在java7后，这种局面有了彻底的改变，java7增加了<a href="14773845321214.html">try-with-resource语法糖</a>，它能自动关闭实现了AotuCloseable接口的资源，并且在Throwable类中增加了addSuppressed方法，此方法用于添加被抑制的异常。</p>
+<p>try-with-resource的用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(InputStream in = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;&quot;</span>)) &#123;</span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果使用try-with-resource，try内部和关闭资源都报出异常，堆栈中的异常将会是try内部的异常，并且将关闭资源的异常添加到try异常的Suppressed中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.Exception</span><br><span class="line">	at com.xjyhs.asf.Test2.main(Test2.java:13)</span><br><span class="line">	Suppressed: java.lang.XXXXException</span><br><span class="line">		at com.xjyhs.asf.Test2.main(Test2.java:18)</span><br></pre></td></tr></table></figure>
+    </div>
+	<p class="sub">Oct 26 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E7%9A%84%E5%85%B3%E9%97%AD"><span class="toc-text">流的关闭</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/java/">java</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/27/IO/4/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-文件输入流FileInputStream</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/25/2016/try-with-resource/">
+                
+                <span class="prev-text">语法糖try-with-resource</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

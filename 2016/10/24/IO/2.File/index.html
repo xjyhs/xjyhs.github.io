@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-文件File | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-文件File
+    </div>
+    <div class="post-content">
+        <h3 id="File类介绍"><a href="#File类介绍" class="headerlink" title="File类介绍"></a>File类介绍</h3><blockquote>
+<p>File类，可以看做文件系统上的另一层抽象，通过File可以无差别的操作windows，unix各种系统的文件（非单纯意义的文件，也包括目录等）。</p>
+</blockquote>
+<h4 id="可以用File类做什么"><a href="#可以用File类做什么" class="headerlink" title="可以用File类做什么"></a>可以用File类做什么</h4><p>File类可以操作文件的元数据，但不可以直接操作数据，这意味着，可以用File类做到：</p>
+<ol>
+<li>增、删、重命名、移动文件或目录</li>
+<li>读取文件长度，如果是目录，长度随机，与目录相关</li>
+<li>读取目录下文件列表</li>
+<li>检测文件是否存在</li>
+<li>检测某个路径是文件还是目录</li>
+<li>修改文件的权限</li>
+</ol>
+<p><strong>注：操作文件的具体数据需要使用流或channel，File只是操作文件的元数据。</strong></p>
+<span id="more"></span>
+
+<p>####File如何完成的文件系统上的抽象<br>查看其源代码，File类中并没有太复杂的逻辑，大多数是对字符串的操作。在File类中具体的操作是由FileSystem类完成的，它的定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> FileSystem fs = DefaultFileSystem.getFileSystem();</span><br></pre></td></tr></table></figure>
+<p>在windows操作系统中，得到的是<strong>WinNTFileSystem</strong><br>在unix操作系统中，得到的是<strong>UnixFileSystem</strong><br>也就是说File类通过<strong>FileSystem</strong>的继承，完成了对多个文件系统的抽象</p>
+<p>比较有意思的是，这里并不是通过多态来完成的抽象<br>而是在windows系统中<strong>FileSystem</strong>类的子类只有<strong>WinNTFileSystem</strong><br>在Unix中，<strong>FileSystem</strong>类的子类只有<strong>UnixFileSystem</strong><br>这是不同操作系统中jdk或jre的细微差别</p>
+<p>###File类的具体用法</p>
+<p>####增、删、重命名、移动文件或目录</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//创建文件</span></span><br><span class="line">f.createNewFile();</span><br><span class="line"><span class="comment">//创建目录</span></span><br><span class="line">f.mkdirs();</span><br><span class="line"><span class="comment">//删除文件或目录</span></span><br><span class="line">f.delete();</span><br><span class="line"><span class="comment">//重命名或移动</span></span><br><span class="line">f.renameTo(<span class="keyword">new</span> File(<span class="string">&quot;./test1&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p>####读取文件长度</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="keyword">long</span> length = f.length();</span><br></pre></td></tr></table></figure>
+
+<p>####读取目录下文件列表<br>如果需要过滤，可以增加<strong>FilenameFilter</strong>过滤器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//该目录下的文件路径</span></span><br><span class="line">String[] list = f.list();</span><br><span class="line"><span class="comment">//该目录下的文件对象</span></span><br><span class="line">File[] files = f.listFiles();</span><br></pre></td></tr></table></figure>
+
+<p>####检测文件是否存在</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="keyword">boolean</span> exists = f.exists();</span><br></pre></td></tr></table></figure>
+<p>####检测路径是文件还是目录</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="keyword">boolean</span> isDirectory = f.isDirectory();</span><br></pre></td></tr></table></figure>
+<p>####修改文件的权限</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//设置读权限</span></span><br><span class="line">f.setReadable(<span class="keyword">true</span>);</span><br><span class="line"><span class="comment">//设置写权限</span></span><br><span class="line">f.setWritable(<span class="keyword">true</span>);</span><br><span class="line"><span class="comment">//设置执行权限</span></span><br><span class="line">f.setExecutable(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+<p>###读取File类源码遇到的问题</p>
+<p>####getAbsolutePath()与getCanonicalPath()的区别<br>程序中使用这两个方法返回的路径，效果是相同的，但**getCanonicalPath()**返回的是规范化的绝对路径，差异如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">File file = <span class="keyword">new</span> File(<span class="string">&quot;../test&quot;</span>);</span><br><span class="line">System.out.println(file.getAbsolutePath());</span><br><span class="line">System.out.println(file.getCanonicalPath());</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">/Users/yunhuang/IdeaProjects/study/../test</span><br><span class="line">/Users/yunhuang/IdeaProjects/test</span><br></pre></td></tr></table></figure>
+
+<h4 id="SecurityManager的作用"><a href="#SecurityManager的作用" class="headerlink" title="SecurityManager的作用"></a>SecurityManager的作用</h4><p>在File类中，很多方法都有如下一句话：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SecurityManager security = System.getSecurityManager();</span><br><span class="line"><span class="keyword">if</span> (security != <span class="keyword">null</span>) &#123;</span><br><span class="line">  security.checkRead(path);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>经百度（为什么不是谷歌-_-#），<strong>SecurityManager</strong>是java的安全管理器，在运行java程序上时，会根据<strong>policy文件</strong>(安全策略文件)加载权限，如果java程序的操作超出了权限范围，将抛出安全异常。</p>
+<p><strong>16.10.27补：看到io中太多函数开头都是这段代码，不禁想起了jdk动态代理-_-#</strong></p>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 24 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#File%E7%B1%BB%E4%BB%8B%E7%BB%8D"><span class="toc-text">File类介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E7%94%A8File%E7%B1%BB%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-text">可以用File类做什么</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SecurityManager%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">SecurityManager的作用</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/25/IO/3.InputStream/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-文件File</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/23/IO/1.start/">
+                
+                <span class="prev-text">I/O笔记开篇</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

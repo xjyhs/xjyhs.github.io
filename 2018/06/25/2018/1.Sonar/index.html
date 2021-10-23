@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>用 Maven 使用 Sonar 分析代码质量 | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        用 Maven 使用 Sonar 分析代码质量
+    </div>
+    <div class="post-content">
+        <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Sonar是一个用于代码质量管理的开源平台，用于管理Java源代码的质量。通过插件机制，Sonar 可以集成不同的测试工具，代码分析工具，以及持续集成工具，比如pmd-cpd、checkstyle、findbugs、Jenkins。通过不同的插件对这些结果进行再加工处理，通过量化的方式度量代码质量的变化，从而可以方便地对不同规模和种类的工程进行代码质量管理。同时 Sonar 还对大量的持续集成工具提供了接口支持，可以很方便地在持续集成中使用 Sonar。此外，Sonar 的插件还可以对 Java 以外的其他编程语言提供支持，对国际化以及报告文档化也有良好的支持。 </p>
+<h3 id="引入Sonar的原因"><a href="#引入Sonar的原因" class="headerlink" title="引入Sonar的原因"></a>引入Sonar的原因</h3><p>介于工作的环境与优秀的大型团队环境差异较大，很难养成好的代码质量习惯，引入Sonar作为代码质量的衡量标准，尽力打破一些开发环境上的壁垒。</p>
+<h3 id="安装Sonar"><a href="#安装Sonar" class="headerlink" title="安装Sonar"></a>安装Sonar</h3><p>从<a target="_blank" rel="noopener" href="http://www.sonarqube.org/downloads/">官网</a>下载最新版Sonar</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#解压</span></span><br><span class="line">unzip sonarqube-7.2.zip</span><br><span class="line">mv sonarqube-7.2 sonarqube</span><br><span class="line"></span><br><span class="line"><span class="comment">#添加sonarqube用户（不允许使用root运行）</span></span><br><span class="line">adduser sonarqube</span><br><span class="line"><span class="comment">#设置密码</span></span><br><span class="line">passwd sonarqube</span><br><span class="line"></span><br><span class="line"><span class="comment">#修改解压目录和用户组为sonarqube</span></span><br><span class="line">chown -R sonarqube:sonarqube ./sonarqube</span><br><span class="line"></span><br><span class="line"><span class="comment">#启动sonar</span></span><br><span class="line"><span class="built_in">cd</span> ./sonarqube/bin/linux-x86-64/</span><br><span class="line">./sonar.sh start</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+
+<h3 id="设置Sonar使用mysql"><a href="#设置Sonar使用mysql" class="headerlink" title="设置Sonar使用mysql"></a>设置Sonar使用mysql</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#编辑配置文件</span></span><br><span class="line">vi ./conf/sonar.properties</span><br><span class="line"></span><br><span class="line"><span class="comment">#在mysql5.6下面添加</span></span><br><span class="line">sonar.jdbc.url=jdbc:mysql://192.168.1.180:3306/sonar?useUnicode=<span class="literal">true</span>&amp;characterEncoding=utf8&amp;rewriteBatchedStatements=<span class="literal">true</span>&amp;useConfigs=maxPerformance&amp;useSSL=<span class="literal">false</span></span><br><span class="line">sonar.jdbc.username=root</span><br><span class="line">sonar.jdbc.password=fsh123!@<span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重启sonar</span></span><br><span class="line">./sonar.sh restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="集成-Maven-与-Sonar"><a href="#集成-Maven-与-Sonar" class="headerlink" title="集成 Maven 与 Sonar"></a>集成 Maven 与 Sonar</h3><p>修改 Maven 的 settings.xml 文件，增加如下配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">profiles</span>&gt;</span>  </span><br><span class="line"> <span class="comment">&lt;!--配置sonar信息--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>sonar<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--EXAMPLE FOT MYSQL--&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sonar.jdbc.url</span>&gt;</span>jdbc:mysql://192.168.1.180:3306/sonar?useUnicode=true<span class="tag">&lt;/<span class="name">sonar.jdbc.url</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sonar.jdbc.driverClassName</span>&gt;</span>com.mysql.jdbc.Driver<span class="tag">&lt;/<span class="name">sonar.jdbc.driverClassName</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sonar.jdbc.username</span>&gt;</span>root<span class="tag">&lt;/<span class="name">sonar.jdbc.username</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sonar.jdbc.password</span>&gt;</span>fsh123!@#<span class="tag">&lt;/<span class="name">sonar.jdbc.password</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sonar.host.url</span>&gt;</span>http://192.168.1.180:9000<span class="tag">&lt;/<span class="name">sonar.host.url</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">profiles</span>&gt;</span>  </span><br></pre></td></tr></table></figure>
+
+<h3 id="用-Maven-进行-Sonar-代码扫描"><a href="#用-Maven-进行-Sonar-代码扫描" class="headerlink" title="用 Maven 进行 Sonar 代码扫描"></a>用 Maven 进行 Sonar 代码扫描</h3><p>在项目根目录下使用<strong>mvn sonar:sonar</strong>命令</p>
+<p>打开结果链接，生成结果如下：<br><img src="http://file1.xjyhs.com/sonar1.png" alt="image"></p>
+
+    </div>
+	<p class="sub">Jun 25 2018</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5Sonar%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-text">引入Sonar的原因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Sonar"><span class="toc-text">安装Sonar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AESonar%E4%BD%BF%E7%94%A8mysql"><span class="toc-text">设置Sonar使用mysql</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E6%88%90-Maven-%E4%B8%8E-Sonar"><span class="toc-text">集成 Maven 与 Sonar</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8-Maven-%E8%BF%9B%E8%A1%8C-Sonar-%E4%BB%A3%E7%A0%81%E6%89%AB%E6%8F%8F"><span class="toc-text">用 Maven 进行 Sonar 代码扫描</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/maven/">maven</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2018/06/26/2018/4.lombok/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">使用 lombok 让你的代码更易读——待完善</span>
+            </a>
+        
+        
+            <a class="next" href="/2018/06/25/2018/2.Watermark/">
+                
+                <span class="prev-text">去除图片简单的水印</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

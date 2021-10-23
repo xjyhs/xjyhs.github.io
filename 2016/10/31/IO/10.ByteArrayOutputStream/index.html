@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-byte数组输出流ByteArrayOutputStream | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-byte数组输出流ByteArrayOutputStream
+    </div>
+    <div class="post-content">
+        <h1 id="io-byte数组输出流ByteArrayOutputStream"><a href="#io-byte数组输出流ByteArrayOutputStream" class="headerlink" title="io-byte数组输出流ByteArrayOutputStream"></a>io-byte数组输出流ByteArrayOutputStream</h1><blockquote>
+<p>ByteArrayOutputStream可以将数据传输至字节数组，该类经常被用来暂存数据。</p>
+</blockquote>
+<h3 id="ByteArrayOutputStream的基本使用"><a href="#ByteArrayOutputStream的基本使用" class="headerlink" title="ByteArrayOutputStream的基本使用"></a>ByteArrayOutputStream的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] bytes = <span class="string">&quot;test&quot;</span>.getBytes();</span><br><span class="line"><span class="comment">//创建对象</span></span><br><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">	<span class="comment">//写入数据</span></span><br><span class="line">  outputStream.write(bytes);</span><br><span class="line">  <span class="comment">//获取数据副本</span></span><br><span class="line">  <span class="keyword">byte</span>[] data = outputStream.toByteArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是段非常无聊的代码，只是介绍下基本用法，实在想不出更简单的例子。</p>
+<span id="more"></span>
+
+<h4 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream();</span><br></pre></td></tr></table></figure>
+<p>默认会在对象内部创建一个32字节大小的数组，空间不够时再扩大空间</p>
+<h4 id="创建指定初始空间的对象"><a href="#创建指定初始空间的对象" class="headerlink" title="创建指定初始空间的对象"></a>创建指定初始空间的对象</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream(<span class="number">1024</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取输出流中当前数据的副本"><a href="#获取输出流中当前数据的副本" class="headerlink" title="获取输出流中当前数据的副本"></a>获取输出流中当前数据的副本</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">  <span class="comment">//各种形式填充数据</span></span><br><span class="line">  setData(outputStream);</span><br><span class="line">  <span class="comment">//获取输出流中当前数据的副本</span></span><br><span class="line">  <span class="keyword">byte</span>[] data = outputStream.toByteArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用toByteArray方法可获得当前输出流中数据的副本</p>
+<h4 id="将数据写入其它输出流"><a href="#将数据写入其它输出流" class="headerlink" title="将数据写入其它输出流"></a>将数据写入其它输出流</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(OutputStream fileOut = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line">  ByteArrayOutputStream arrayOut = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">  <span class="comment">//各种形式填充数据</span></span><br><span class="line">  setData(arrayOut);</span><br><span class="line">  <span class="comment">//将数据写入其它输出流</span></span><br><span class="line">  arrayOut.writeTo(fileOut);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用ByteArrayOutputStream可以作为其它输出流的缓冲区，与BufferedOutputStream不同的是ByteArrayOutputStream缓存了所有数据，只需调用一次writeTo即可将缓存数据全部写入媒介。</p>
+<h3 id="ByteArrayOutputStream的实际应用"><a href="#ByteArrayOutputStream的实际应用" class="headerlink" title="ByteArrayOutputStream的实际应用"></a>ByteArrayOutputStream的实际应用</h3><h4 id="网络交互暂存数据"><a href="#网络交互暂存数据" class="headerlink" title="网络交互暂存数据"></a>网络交互暂存数据</h4><p>网络交互耗费资源非常大，一般选择将数据整理完毕后一次发送，可使用ByteArrayOutputStream暂存数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] bytes = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream arrayOut = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">  DataOutputStream dataOut = <span class="keyword">new</span> DataOutputStream(arrayOut)) &#123;</span><br><span class="line">  <span class="comment">//写入数据</span></span><br><span class="line">  dataOut.writeChars(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">  dataOut.writeInt(<span class="number">1</span>);</span><br><span class="line">  dataOut.writeBoolean(<span class="keyword">false</span>);</span><br><span class="line">  <span class="comment">//获取数据</span></span><br><span class="line">  bytes = arrayOut.toByteArray();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> bytes;</span><br></pre></td></tr></table></figure>
+
+<h4 id="输出流转换为输入流"><a href="#输出流转换为输入流" class="headerlink" title="输出流转换为输入流"></a>输出流转换为输入流</h4><p>程序中总会遇到各种各样的奇葩问题，大部分是程序员的思路问题，有些是迫不得已。<br>下面是一个奇葩的输出流转输入流的程序，具体应用场景其实是个笑话，但有些东西可以借鉴：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] data = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream arrayOut = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">	<span class="comment">//七牛云中获取数据</span></span><br><span class="line">	QiniuUtils.download(arrayOut, <span class="string">&quot;1.xlsx&quot;</span>);</span><br><span class="line">	data = arrayOut.toByteArray();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//解析excel程序</span></span><br><span class="line">parseExcel(<span class="keyword">new</span> ByteArrayInputStream(data));</span><br></pre></td></tr></table></figure>
+
+<p>获取副本会占用双倍的空间，如果要节省空间，也可以自定义ByteArrayOutputStream：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyByteArrayOutputStream</span> <span class="keyword">extends</span> <span class="title">ByteArrayOutputStream</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyByteArrayOutputStream</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>(<span class="number">32</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyByteArrayOutputStream</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>(size);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> InputStream <span class="title">asInputStream</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ByteArrayInputStream(buf, <span class="number">0</span>, count);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 31 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#io-byte%E6%95%B0%E7%BB%84%E8%BE%93%E5%87%BA%E6%B5%81ByteArrayOutputStream"><span class="toc-text">io-byte数组输出流ByteArrayOutputStream</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteArrayOutputStream%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">ByteArrayOutputStream的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1"><span class="toc-text">创建对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%8C%87%E5%AE%9A%E5%88%9D%E5%A7%8B%E7%A9%BA%E9%97%B4%E7%9A%84%E5%AF%B9%E8%B1%A1"><span class="toc-text">创建指定初始空间的对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E8%BE%93%E5%87%BA%E6%B5%81%E4%B8%AD%E5%BD%93%E5%89%8D%E6%95%B0%E6%8D%AE%E7%9A%84%E5%89%AF%E6%9C%AC"><span class="toc-text">获取输出流中当前数据的副本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%86%E6%95%B0%E6%8D%AE%E5%86%99%E5%85%A5%E5%85%B6%E5%AE%83%E8%BE%93%E5%87%BA%E6%B5%81"><span class="toc-text">将数据写入其它输出流</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteArrayOutputStream%E7%9A%84%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8"><span class="toc-text">ByteArrayOutputStream的实际应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BA%A4%E4%BA%92%E6%9A%82%E5%AD%98%E6%95%B0%E6%8D%AE"><span class="toc-text">网络交互暂存数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%B5%81%E8%BD%AC%E6%8D%A2%E4%B8%BA%E8%BE%93%E5%85%A5%E6%B5%81"><span class="toc-text">输出流转换为输入流</span></a></li></ol></li></ol></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/31/IO/9.BufferedOutputStream_AND_FilterOutputStream/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-缓冲输出流BufferedOutputStream与FilterOutputStream</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/28/IO/5.OutputStream/">
+                
+                <span class="prev-text">io-输出流OutputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

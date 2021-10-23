@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-文件File | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-文件File
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>InputStream类是所有输入流的基类，它定义了输入流的基本操作</p>
+</blockquote>
+<h3 id="InputStream实现的接口"><a href="#InputStream实现的接口" class="headerlink" title="InputStream实现的接口"></a>InputStream实现的接口</h3><p>它实现了Closeable接口，Closeable接口用来描述可以关闭的数据源和目标，在java7及以后版本中，Closeable继承了AutoCloseable，这意味着继承于Closeable的对象可以使用try-with-resource进行资源的自动关闭(见 <a href="14773845321214.html">语法糖try-with-resource</a>)</p>
+<span id="more"></span>
+
+<h3 id="InputStream常用子类"><a href="#InputStream常用子类" class="headerlink" title="InputStream常用子类"></a>InputStream常用子类</h3><ol>
+<li>FileInputStream</li>
+<li>ByteArrayInputStream</li>
+<li>ObjectInputStream</li>
+</ol>
+<h3 id="InputStream提供的主要方法"><a href="#InputStream提供的主要方法" class="headerlink" title="InputStream提供的主要方法"></a>InputStream提供的主要方法</h3><h4 id="read方法"><a href="#read方法" class="headerlink" title="read方法"></a>read方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> data = inputStream.read();</span><br></pre></td></tr></table></figure>
+<p>read()方法返回从InputStream流内读取到的一个字节内容，它是一个抽象方法，由子类去实现，但在InputStream中实现了read()基本的重载方法**read(byte b[])<strong>与</strong>read(byte b[], int off, in len)**。</p>
+<p>在某些InputStream的子类中还提供了读取其它基本类型数据的的read方法，比如readBoolean()，readLong()等。</p>
+<h4 id="skip方法"><a href="#skip方法" class="headerlink" title="skip方法"></a>skip方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inputStream.skip(<span class="number">20</span>);</span><br></pre></td></tr></table></figure>
+<p>skip方法提供了跳过和丢弃N个字节的功能，在InputStream中简单的read了N次来实现该功能，API中建议由子类来实现更有效的方案。</p>
+<p>会有各种原因，使skip方法结束时，跳过的字节数小于N。</p>
+<p><strong>比如：</strong></p>
+<ol>
+<li>在N个字节前，输入流结束</li>
+<li>发生异常</li>
+<li>子类未重写该方法时，N不得大于类中定义的MAX_SKIP_BUFFER_SIZE，InputStream类中该变量值为2048</li>
+</ol>
+<h4 id="available方法"><a href="#available方法" class="headerlink" title="available方法"></a>available方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num = inputStream.available();</span><br></pre></td></tr></table></figure>
+<p>返回输入流下一个方法调用可以不用阻塞地从输入流中读取或跳过的字节数。</p>
+<p>该方法多用于网络流，在文件流中，文件的长度即可获取字节的长度，而网络流中对于接收方而言，流中数据的长度是无法得知的，所以可以通过该方法来获取数据长度。</p>
+<p>但网络数据传输使，会有拆包、黏包的情况，故使用该方法获取的数值即可能大于也可能小于发送方实际发送一次的数据。</p>
+<p>所以建议使用自定义数据结构，用在包头描述数据的长度的方式来代替该方法。</p>
+<h4 id="mark和reset方法"><a href="#mark和reset方法" class="headerlink" title="mark和reset方法"></a>mark和reset方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//标记</span></span><br><span class="line">inputStream.mark(<span class="number">1024000</span>);</span><br><span class="line"><span class="comment">//进行读取操作</span></span><br><span class="line">....</span><br><span class="line"><span class="comment">//定位到标记位置，以遍重新读取</span></span><br><span class="line">inputStream.reset();</span><br></pre></td></tr></table></figure>
+<p>mark方法用于标记输入流中的当前位置，参数为最多在调用reset之前可以从流中读取的字节数，超过设定值，则mark将失效。</p>
+<p>reset方法，将输入流重新定位到标记的位置</p>
+<p>并不是每个inputStream都支持mark和reset功能<br>可以调用markSupported来确定当前输入流是否支持：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> markSupported = inputStream.markSupported();</span><br></pre></td></tr></table></figure>
+
+<h3 id="关于inputStream的疑问"><a href="#关于inputStream的疑问" class="headerlink" title="关于inputStream的疑问"></a>关于inputStream的疑问</h3><h4 id="read方法的返回类型"><a href="#read方法的返回类型" class="headerlink" title="read方法的返回类型"></a>read方法的返回类型</h4><p>为什么使用int，而不是byte作为返回类型<br>如果是int类型存储空间大，方便子类进行向下数据转换来实现其它read方法的开发，那么int-&gt;long已是向上数据转换，readLong方法又是如何实现其功能的？</p>
+<h4 id="read-byte-b-int-off-int-len-吞异常"><a href="#read-byte-b-int-off-int-len-吞异常" class="headerlink" title="read(byte b[], int off, int len)吞异常"></a>read(byte b[], int off, int len)吞异常</h4><p>在该方法中有一段代码为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">for</span> (; i &lt; len ; i++) &#123;</span><br><span class="line">      c = read();</span><br><span class="line">      <span class="keyword">if</span> (c == -<span class="number">1</span>) &#123;</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      b[off + i] = (<span class="keyword">byte</span>)c;</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException ee) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样做的原因是什么？</p>
+<h4 id="available、close、mark、reset、markSupported在InpurtStream类中实现的意义是什么？"><a href="#available、close、mark、reset、markSupported在InpurtStream类中实现的意义是什么？" class="headerlink" title="available、close、mark、reset、markSupported在InpurtStream类中实现的意义是什么？"></a>available、close、mark、reset、markSupported在InpurtStream类中实现的意义是什么？</h4><p>既然InputStream已是抽象类，这些方法在InputStream中要么是空方法、要么返回0、返回false，并没有任何实际的意义，为什么不定义成抽象方法由各子类来实现？</p>
+<h4 id="mark、reset定义为synchronized"><a href="#mark、reset定义为synchronized" class="headerlink" title="mark、reset定义为synchronized"></a>mark、reset定义为synchronized</h4><p>这两个方法有需要同步的地方？为什么read方法没有同步</p>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 25 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#InputStream%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">InputStream实现的接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InputStream%E5%B8%B8%E7%94%A8%E5%AD%90%E7%B1%BB"><span class="toc-text">InputStream常用子类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InputStream%E6%8F%90%E4%BE%9B%E7%9A%84%E4%B8%BB%E8%A6%81%E6%96%B9%E6%B3%95"><span class="toc-text">InputStream提供的主要方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#read%E6%96%B9%E6%B3%95"><span class="toc-text">read方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#skip%E6%96%B9%E6%B3%95"><span class="toc-text">skip方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#available%E6%96%B9%E6%B3%95"><span class="toc-text">available方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mark%E5%92%8Creset%E6%96%B9%E6%B3%95"><span class="toc-text">mark和reset方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EinputStream%E7%9A%84%E7%96%91%E9%97%AE"><span class="toc-text">关于inputStream的疑问</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#read%E6%96%B9%E6%B3%95%E7%9A%84%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B"><span class="toc-text">read方法的返回类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#read-byte-b-int-off-int-len-%E5%90%9E%E5%BC%82%E5%B8%B8"><span class="toc-text">read(byte b[], int off, int len)吞异常</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#available%E3%80%81close%E3%80%81mark%E3%80%81reset%E3%80%81markSupported%E5%9C%A8InpurtStream%E7%B1%BB%E4%B8%AD%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%84%8F%E4%B9%89%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">available、close、mark、reset、markSupported在InpurtStream类中实现的意义是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mark%E3%80%81reset%E5%AE%9A%E4%B9%89%E4%B8%BAsynchronized"><span class="toc-text">mark、reset定义为synchronized</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/25/2016/try-with-resource/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">语法糖try-with-resource</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/24/IO/2.File/">
+                
+                <span class="prev-text">io-文件File</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

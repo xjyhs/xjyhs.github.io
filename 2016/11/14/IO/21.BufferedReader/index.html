@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-缓冲输入字符流BufferedReader | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-缓冲输入字符流BufferedReader
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>装饰其它字符输入流，从中读取并缓冲字符数据，以实现字符、数组和行的高效读取。<br>使用BufferedReader可以降低文件读取的次数，大幅度提高io的性能，建议使用BufferedReader包装其它Reader。</p>
+</blockquote>
+<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BufferedReader</span> <span class="keyword">extends</span> <span class="title">Reader</span></span></span><br></pre></td></tr></table></figure>
+<p>直接继承于<a href="14786827784337.html?_blank">Reader</a>。</p>
+<span id="more"></span>
+
+<h3 id="成员变量与方法"><a href="#成员变量与方法" class="headerlink" title="成员变量与方法"></a>成员变量与方法</h3><h4 id="fill方法"><a href="#fill方法" class="headerlink" title="fill方法"></a>fill方法</h4><p>fill是BufferReader的核心方法，它负责读取并缓冲字符数据，以避免每次调用 read() 或 readLine()都从文件读取。</p>
+<p>在没有使用mark方法前，fill方法会按照默认的缓冲区最大值（8192个字符）进行数据的缓冲；如果使用了mark方法，mark位置以后的数据会持续留在缓冲区，直至缓冲区大小超过mark给定的限制导致mark失效。</p>
+<p>它的源码及涉及的成员变量如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//字符输入流</span></span><br><span class="line"><span class="keyword">private</span> Reader in;</span><br><span class="line"><span class="comment">//缓冲区</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">char</span> cb[];</span><br><span class="line"><span class="comment">//缓冲区有效数据位置，缓冲区指针位置</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> nChars, nextChar;</span><br><span class="line"></span><br><span class="line"><span class="comment">//非法标记</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> INVALIDATED = -<span class="number">2</span>;</span><br><span class="line"><span class="comment">//无标记</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UNMARKED = -<span class="number">1</span>;</span><br><span class="line"><span class="comment">//缓冲区标记位置</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> markedChar = UNMARKED;</span><br><span class="line"><span class="comment">//mark方法给定缓冲最大限制</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> readAheadLimit = <span class="number">0</span>; <span class="comment">/* Valid only when markedChar &gt; 0 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//标记下一个字符是否是换行符</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> skipLF = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//mark时skipLF的值</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> markedSkipLF = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//默认字符缓冲区大小</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> defaultCharBufferSize = <span class="number">8192</span>;</span><br><span class="line"><span class="comment">//行初始长度</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> defaultExpectedLineLength = <span class="number">80</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fill</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	 <span class="comment">//缓冲区指针位置</span></span><br><span class="line">   <span class="keyword">int</span> dst;</span><br><span class="line">   <span class="comment">//没有标记</span></span><br><span class="line">   <span class="keyword">if</span> (markedChar &lt;= UNMARKED) &#123;</span><br><span class="line">       dst = <span class="number">0</span>;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       <span class="comment">//标记后读取的数据长度</span></span><br><span class="line">       <span class="keyword">int</span> delta = nextChar - markedChar;</span><br><span class="line">       <span class="comment">//标记后的长度大于mark方法给定的限制，让标记失效</span></span><br><span class="line">       <span class="keyword">if</span> (delta &gt;= readAheadLimit) &#123;</span><br><span class="line">           <span class="comment">/* 让标记失效 */</span></span><br><span class="line">           markedChar = INVALIDATED;</span><br><span class="line">           readAheadLimit = <span class="number">0</span>;</span><br><span class="line">           dst = <span class="number">0</span>;</span><br><span class="line">       &#125; </span><br><span class="line">       <span class="comment">//标记后的长度小于mark方法给定的限制</span></span><br><span class="line">       <span class="keyword">else</span> &#123;</span><br><span class="line">       		<span class="comment">//缓冲区是否要扩大</span></span><br><span class="line">       		<span class="comment">//不需要扩大</span></span><br><span class="line">           <span class="keyword">if</span> (readAheadLimit &lt;= cb.length) &#123;</span><br><span class="line">           		 <span class="comment">//移除mark前的数据</span></span><br><span class="line">               <span class="comment">//当markedChar已为0时，这里是否有性能问题？？（System.arraycopy非java实现，无法看到）</span></span><br><span class="line">               System.arraycopy(cb, markedChar, cb, <span class="number">0</span>, delta);</span><br><span class="line">               markedChar = <span class="number">0</span>;</span><br><span class="line">               dst = delta;</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               <span class="comment">//扩大缓冲区到mark给定的readAheadLimit大小，并移除mark前的数据</span></span><br><span class="line">               <span class="keyword">char</span> ncb[] = <span class="keyword">new</span> <span class="keyword">char</span>[readAheadLimit];</span><br><span class="line">               System.arraycopy(cb, markedChar, ncb, <span class="number">0</span>, delta);</span><br><span class="line">               cb = ncb;</span><br><span class="line">               markedChar = <span class="number">0</span>;</span><br><span class="line">               dst = delta;</span><br><span class="line">           &#125;</span><br><span class="line">           nextChar = nChars = delta;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//读取数据至缓冲区</span></span><br><span class="line">   <span class="keyword">int</span> n;</span><br><span class="line">   <span class="keyword">do</span> &#123;</span><br><span class="line">       n = in.read(cb, dst, cb.length - dst);</span><br><span class="line">   &#125; <span class="keyword">while</span> (n == <span class="number">0</span>);</span><br><span class="line">   <span class="keyword">if</span> (n &gt; <span class="number">0</span>) &#123;</span><br><span class="line">       nChars = dst + n;</span><br><span class="line">       nextChar = dst;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="readLine"><a href="#readLine" class="headerlink" title="readLine"></a>readLine</h4><p>BuffereReader提供了readLine这个非常方便的方法，一次可以在字符流中读取一行数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  String str = reader.readLine();</span><br><span class="line">  System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>readLine方法的实现，要考虑一行数据跨多个缓冲区的情况，它的内部实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//行内数据是否包括换行符，默认不包括</span></span><br><span class="line"><span class="function">String <span class="title">readLine</span><span class="params">(<span class="keyword">boolean</span> ignoreLF)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   StringBuffer s = <span class="keyword">null</span>;</span><br><span class="line">   <span class="keyword">int</span> startChar;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">synchronized</span> (lock) &#123;</span><br><span class="line">       ensureOpen();</span><br><span class="line">       <span class="keyword">boolean</span> omitLF = ignoreLF || skipLF;</span><br><span class="line">   <span class="comment">//外部循环标记，用于跨缓冲区读取数据</span></span><br><span class="line">   bufferLoop:</span><br><span class="line">       <span class="keyword">for</span> (;;) &#123;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (nextChar &gt;= nChars)</span><br><span class="line">               fill();</span><br><span class="line">           <span class="keyword">if</span> (nextChar &gt;= nChars) &#123; <span class="comment">/* EOF */</span></span><br><span class="line">               <span class="keyword">if</span> (s != <span class="keyword">null</span> &amp;&amp; s.length() &gt; <span class="number">0</span>)</span><br><span class="line">                   <span class="keyword">return</span> s.toString();</span><br><span class="line">               <span class="keyword">else</span></span><br><span class="line">                   <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">boolean</span> eol = <span class="keyword">false</span>;</span><br><span class="line">           <span class="keyword">char</span> c = <span class="number">0</span>;</span><br><span class="line">           <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">           <span class="comment">/* 第一个字符是换行符则跳过 */</span></span><br><span class="line">           <span class="keyword">if</span> (omitLF &amp;&amp; (cb[nextChar] == <span class="string">&#x27;\n&#x27;</span>))</span><br><span class="line">               nextChar++;</span><br><span class="line">           skipLF = <span class="keyword">false</span>;</span><br><span class="line">           omitLF = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">		  <span class="comment">//内部循环标记</span></span><br><span class="line">		  <span class="comment">//循环缓冲区内字符，遇到换行符则结束循环，用于判断读取行数据是否跨缓冲区</span></span><br><span class="line">       charLoop:</span><br><span class="line">           <span class="keyword">for</span> (i = nextChar; i &lt; nChars; i++) &#123;</span><br><span class="line">               c = cb[i];</span><br><span class="line">               <span class="keyword">if</span> ((c == <span class="string">&#x27;\n&#x27;</span>) || (c == <span class="string">&#x27;\r&#x27;</span>)) &#123;</span><br><span class="line">                   eol = <span class="keyword">true</span>;</span><br><span class="line">                   <span class="keyword">break</span> charLoop;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           startChar = nextChar;</span><br><span class="line">           nextChar = i;</span><br><span class="line">				<span class="comment">//未跨缓冲区，读取行内数据并返回</span></span><br><span class="line">           <span class="keyword">if</span> (eol) &#123;</span><br><span class="line">               String str;</span><br><span class="line">               <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   str = <span class="keyword">new</span> String(cb, startChar, i - startChar);</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   s.append(cb, startChar, i - startChar);</span><br><span class="line">                   str = s.toString();</span><br><span class="line">               &#125;</span><br><span class="line">               nextChar++;</span><br><span class="line">               <span class="keyword">if</span> (c == <span class="string">&#x27;\r&#x27;</span>) &#123;</span><br><span class="line">                   skipLF = <span class="keyword">true</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">return</span> str;</span><br><span class="line">           &#125;</span><br><span class="line">				<span class="comment">//跨缓冲区，读取缓冲区所有未读数据</span></span><br><span class="line">           <span class="keyword">if</span> (s == <span class="keyword">null</span>)</span><br><span class="line">               s = <span class="keyword">new</span> StringBuffer(defaultExpectedLineLength);</span><br><span class="line">           s.append(cb, startChar, i - startChar);</span><br><span class="line">           <span class="comment">//继续下次外部循环，直至读取完一整行数据</span></span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="line方法"><a href="#line方法" class="headerlink" title="line方法"></a>line方法</h4><p>line方法是java8新增的方法，它返回一个Stream对象，Stream是java8最大的亮点，用Stream能对集合对象进行各种非常便利、高效的聚合操作，或者大批量数据操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  reader.lines().map(s -&gt; <span class="string">&quot;文本:&quot;</span>+ s).forEach(s -&gt; System.out.println(s));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">文本:1</span><br><span class="line">文本:2</span><br><span class="line">文本:3</span><br><span class="line">文本:4</span><br></pre></td></tr></table></figure>
+
+<h4 id="其它方法"><a href="#其它方法" class="headerlink" title="其它方法"></a>其它方法</h4><p>参考<a href="14786827784337.html?_blank">Reader</a>。</p>
+
+    </div>
+	<p class="sub">Nov 14 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%AE%9A%E4%B9%89"><span class="toc-text">类定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E4%B8%8E%E6%96%B9%E6%B3%95"><span class="toc-text">成员变量与方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#fill%E6%96%B9%E6%B3%95"><span class="toc-text">fill方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#readLine"><span class="toc-text">readLine</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#line%E6%96%B9%E6%B3%95"><span class="toc-text">line方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E6%96%B9%E6%B3%95"><span class="toc-text">其它方法</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/11/18/IO/24.CharArrayReader/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-数组字符输入流CharArrayReader</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/11/14/IO/22.BufferedWriter/">
+                
+                <span class="prev-text">io-缓冲输出字符流BufferedWriter</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

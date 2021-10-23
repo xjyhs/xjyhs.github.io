@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>生产环境Tomcat启动时卡在INFO:&amp;nbsp;Deploying&amp;nbsp;web&amp;nbsp;application&amp;nbsp;directory | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        生产环境Tomcat启动时卡在INFO:&amp;nbsp;Deploying&amp;nbsp;web&amp;nbsp;application&amp;nbsp;directory
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>阿里的华北区的部分服务器虚拟化的技术更换为kvm，所涉及的服务器被强迫迁移，并更换内外网ip，所在公司没有逃脱魔爪，由于部分服务由java提供，所以晚上被留下应急。</p>
+</blockquote>
+<p>服务器的迁移很快完成，但上去后发现服务无法启动，一直卡在<br>Deploying web application directory ……</p>
+<p>感觉非常熟悉的一幕，但是想不起来哪见过了，检查了jdk的环境，文件的权限，统统没有问题。重新下载一份空的tomcat，启动依然卡主，所以问题必然是出在jdk上，在网上仔细搜了一下，果然找到了原因：</p>
+<blockquote>
+<p>linux或者部分unix系统提供随机数设备是/dev/random 和/dev/urandom ，两个有区别，urandom安全性没有random高，但random需要时间间隔生成随机数。jdk默认调用random。<br>找到jdk1.x.x_xx/jre/lib/security/Java.security文件，在文件中找到securerandom.source这个设置项，将其改为：<br>securerandom.source=file:/dev/./urandom</p>
+</blockquote>
+<p>看到这熟悉的文章，突然想起大概是一年半前测试服务出的一个问题：有一台测试的虚拟机启动项目时要卡住很久才能启动，同样的问题，同样的解决方案-_-#</p>
+<p>好记性不如烂笔头，更何况我这烂记性😭，还是简单的记一下吧。</p>
+
+    </div>
+	<p class="sub">Mar 25 2017</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/java/">java</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2018/06/25/2018/3.last_query_cost/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">mysql 当前查询的成本——待完善</span>
+            </a>
+        
+        
+            <a class="next" href="/2017/03/25/2017/2.spring-boot-devtools/">
+                
+                <span class="prev-text">spring-boot-devtools</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

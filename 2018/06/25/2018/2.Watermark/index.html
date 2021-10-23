@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>去除图片简单的水印 | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        去除图片简单的水印
+    </div>
+    <div class="post-content">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近在为公司做一些技术类调研，某日开会听到有一项调研为去除图片水印，比较感兴趣。so，要来该调研一试，最后的效果还可以吧</p>
+<h3 id="水印原理"><a href="#水印原理" class="headerlink" title="水印原理"></a>水印原理</h3><p>首先查了一下水印的原理，水印是两个图层的混合，其混合算法为（A为不透明度）：</p>
+<blockquote>
+<p>混合色 = 前景色 * A + 背景色 *(1 - A)</p>
+</blockquote>
+<p>以常见的RGB色彩模式为例：</p>
+<blockquote>
+<p>混合色R = 前景色R * A + 背景色R *(1 - A)</p>
+<p>混合色G = 前景色G * A + 背景色G *(1 - A)</p>
+<p>混合色B = 前景色B * A + 背景色B *(1 - A)</p>
+</blockquote>
+<h3 id="推断背景色"><a href="#推断背景色" class="headerlink" title="推断背景色"></a>推断背景色</h3><p>既然混合图层的原理搞清楚了，那么可以推导出：</p>
+<blockquote>
+<p>背景色R = (混合色R - 前景色R * A) / (1 - A)</p>
+<p>背景色G = (混合色G - 前景色G * A / (1 - A)</p>
+<p>背景色B = (混合色B - 前景色B * A) / (1 - A)</p>
+</blockquote>
+<p>而水印基本都是白色内容以不同的透明度与原图层进行混合，由白色（<strong>R:255,G:255,B:255</strong>）可不负责任推断为：</p>
+<span id="more"></span>
+
+<blockquote>
+<p>背景色R = (混合色R - 255 * A) / (1 - A)</p>
+<p>背景色G = (混合色G - 255 * A) / (1 - A)</p>
+<p>背景色B = (混合色B - 255 * A) / (1 - A)</p>
+</blockquote>
+<p>那么，推断背景色的关键就在于寻找 <strong>不透明度A</strong></p>
+<h3 id="寻找不透明度A"><a href="#寻找不透明度A" class="headerlink" title="寻找不透明度A"></a>寻找不透明度A</h3><p>要抛开所有的噪音，获取一张干净的水印图，可以上传一张纯黑色的图片来骗取水印，获得的水印如下：<br><img src="http://file1.xjyhs.com/watermark11.jpg" alt="image"></p>
+<p>放大后如下图所示：</p>
+<p><img src="http://file1.xjyhs.com/watermark21.jpg" alt="image"></p>
+<p>可以看到字体整体并不是一个统一的颜色，字体中心到边缘的趋势是不透明度越来越小，那么上面用统一的不透明度A来计算就是错误的。我们可以选择逐个像素点计算不透明度，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//加载图像</span></span><br><span class="line">BufferedImage bi = ImageIO.read(<span class="keyword">new</span> File(<span class="string">&quot;c:\\3.png&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; width; x++) &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> y = <span class="number">0</span>; y &lt; height; y++) &#123;</span><br><span class="line">        <span class="keyword">int</span> rgb = bi.getRGB(x, y);</span><br><span class="line">        <span class="keyword">int</span> r = (rgb &amp; <span class="number">0xff0000</span>) &gt;&gt; <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">int</span> g = (rgb &amp; <span class="number">0xff00</span>) &gt;&gt; <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">int</span> b = (rgb &amp; <span class="number">0xff</span>);</span><br><span class="line">        <span class="comment">//不是黑色，即是水印的像素点</span></span><br><span class="line">        <span class="keyword">if</span>(rgb != blackRGB) &#123;</span><br><span class="line">            <span class="comment">//每个像素点的不透明度(此处只需要计算r的不透明度，因为黑白图中所有颜色的R、G、B都是相同的)</span></span><br><span class="line">            folat A = r / <span class="number">255.0f</span>;</span><br><span class="line">            <span class="comment">//存储每个像素点的不透明度</span></span><br><span class="line">            map.put(<span class="string">&quot;x&quot;</span> + <span class="string">&quot;_&quot;</span> + y, A);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>到这已经获取了水印的所有像素点坐标，以及每个像素点的不透明度A，很多水印都有固定的位置，固定的像素点，以某8为例：<br><img src="http://file1.xjyhs.com/watermark3.jpg" alt="image"></p>
+<p>某8的水印都在右下角，如果右下角的像素坐标固定为0,0，58同城上每张图的水印坐标都为固定，因此上面程序要适用于所有的图，逻辑必须改为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//加载图像</span></span><br><span class="line">BufferedImage bi = ImageIO.read(<span class="keyword">new</span> File(<span class="string">&quot;c:\\3.png&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> x = <span class="number">0</span>; x &lt; width; x++) &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> y = <span class="number">0</span>; y &lt; height; y++) &#123;</span><br><span class="line">        <span class="keyword">int</span> rgb = bi.getRGB(x, y);</span><br><span class="line">        <span class="keyword">int</span> r = (rgb &amp; <span class="number">0xff0000</span>) &gt;&gt; <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">int</span> g = (rgb &amp; <span class="number">0xff00</span>) &gt;&gt; <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">int</span> b = (rgb &amp; <span class="number">0xff</span>);</span><br><span class="line">        <span class="comment">//不是黑色，即是水印的像素点</span></span><br><span class="line">        <span class="keyword">if</span>(rgb != blackRGB) &#123;</span><br><span class="line">            <span class="comment">//每个像素点的不透明度(此处只需要计算r的不透明度，因为黑白图中所有颜色的R、G、B都是相同的)</span></span><br><span class="line">            folat A = r / <span class="number">255.0f</span>;</span><br><span class="line">            <span class="comment">//以右下角为(0,0)计算水印各像素点坐标</span></span><br><span class="line">            <span class="keyword">int</span> x = bi.getWidth() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">0</span>]);</span><br><span class="line">            <span class="keyword">int</span> y = bi.getHeight() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">1</span>]);</span><br><span class="line">            <span class="comment">//存储每个像素点的不透明度</span></span><br><span class="line">            map.put(<span class="string">&quot;x&quot;</span> + <span class="string">&quot;_&quot;</span> + y, A);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="恢复原背景色"><a href="#恢复原背景色" class="headerlink" title="恢复原背景色"></a>恢复原背景色</h3><p>某8的水印像素点从右下角计算位置完全一致，故可以直接计算原背景色：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">for</span>(String coordinate : map.keySet()) &#123;</span><br><span class="line">    Float aFloat = map.get(coordinate);</span><br><span class="line">    String[] split = coordinate.split(<span class="string">&quot;_&quot;</span>);</span><br><span class="line">    <span class="comment">//将右下角计算的坐标转为正常的坐标值</span></span><br><span class="line">    <span class="keyword">int</span> x = bi.getWidth() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">int</span> y = bi.getHeight() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算R、G、B分量</span></span><br><span class="line">    <span class="keyword">int</span> rgb = bi.getRGB(x, y);</span><br><span class="line">    <span class="keyword">int</span> r = (rgb &amp; <span class="number">0xff0000</span>) &gt;&gt; <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">int</span> g = (rgb &amp; <span class="number">0xff00</span>) &gt;&gt; <span class="number">8</span>;</span><br><span class="line">    <span class="keyword">int</span> b = (rgb &amp; <span class="number">0xff</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算水印像素点原来RGB，因存在误差，可能导致分量&lt;0，这里小于0的分量统一处理成12（随便选的，没有原因）</span></span><br><span class="line">    <span class="keyword">if</span>(r - whiteR * aFloat &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        r = (<span class="keyword">int</span>) ((r - whiteR * aFloat) / (<span class="number">1</span> - aFloat));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        r = <span class="number">12</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    g = (rgb &amp; <span class="number">0xff00</span>) &gt;&gt; <span class="number">8</span>;</span><br><span class="line">    <span class="keyword">if</span>(g - whiteG * aFloat &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        g = (<span class="keyword">int</span>) ((g - whiteG * aFloat) / (<span class="number">1</span> - aFloat));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        g = <span class="number">12</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    b = (rgb &amp; <span class="number">0xff</span>);</span><br><span class="line">    <span class="keyword">if</span>(b - whiteB * aFloat &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        b = (<span class="keyword">int</span>) ((b - whiteB * aFloat) / (<span class="number">1</span> - aFloat));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        b = <span class="number">12</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算原背景色rgb值</span></span><br><span class="line">    rgb = <span class="number">0</span>;</span><br><span class="line">    rgb = rgb | (r &lt;&lt; <span class="number">16</span>);</span><br><span class="line">    rgb = rgb | g &lt;&lt; <span class="number">8</span>;</span><br><span class="line">    rgb = rgb | b;</span><br><span class="line">    <span class="comment">//恢复原背景色</span></span><br><span class="line">    bi.setRGB(x, y, rgb);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<p><img src="http://file1.xjyhs.com/watermark4.jpg" alt="image"></p>
+<p>可以看到因误差的存在会导致水印可以看出一部分轮廓，如果图片颜色过深会很容易分辨出水印的原内容，为避免看出原水印内容可以对图片进行高斯模糊处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">for</span>(String coordinate : map.keySet()) &#123;</span><br><span class="line">    Float aFloat = map.get(coordinate);</span><br><span class="line">    String[] split = coordinate.split(<span class="string">&quot;_&quot;</span>);</span><br><span class="line">    <span class="comment">//将右下角计算的坐标转为正常的坐标值</span></span><br><span class="line">    <span class="keyword">int</span> x = bi.getWidth() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">int</span> y = bi.getHeight() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算R、G、B分量</span></span><br><span class="line">    <span class="keyword">int</span> rgb = bi.getRGB(x, y);</span><br><span class="line">    <span class="keyword">int</span> r = (rgb &amp; <span class="number">0xff0000</span>) &gt;&gt; <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">int</span> g = (rgb &amp; <span class="number">0xff00</span>) &gt;&gt; <span class="number">8</span>;</span><br><span class="line">    <span class="keyword">int</span> b = (rgb &amp; <span class="number">0xff</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算水印像素点原来RGB，因存在误差，可能导致分量&lt;0，这里小于0的分量统一处理成12（随便选的，没有原因）</span></span><br><span class="line">    <span class="keyword">if</span>(r - whiteR * aFloat &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        r = (<span class="keyword">int</span>) ((r - whiteR * aFloat) / (<span class="number">1</span> - aFloat));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        r = <span class="number">12</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    g = (rgb &amp; <span class="number">0xff00</span>) &gt;&gt; <span class="number">8</span>;</span><br><span class="line">    <span class="keyword">if</span>(g - whiteG * aFloat &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        g = (<span class="keyword">int</span>) ((g - whiteG * aFloat) / (<span class="number">1</span> - aFloat));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        g = <span class="number">12</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    b = (rgb &amp; <span class="number">0xff</span>);</span><br><span class="line">    <span class="keyword">if</span>(b - whiteB * aFloat &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        b = (<span class="keyword">int</span>) ((b - whiteB * aFloat) / (<span class="number">1</span> - aFloat));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        b = <span class="number">12</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算原背景色rgb值</span></span><br><span class="line">    rgb = <span class="number">0</span>;</span><br><span class="line">    rgb = rgb | (r &lt;&lt; <span class="number">16</span>);</span><br><span class="line">    rgb = rgb | g &lt;&lt; <span class="number">8</span>;</span><br><span class="line">    rgb = rgb | b;</span><br><span class="line">    <span class="comment">//恢复原背景色</span></span><br><span class="line">    bi.setRGB(x, y, rgb);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//利用ImageJ进行高斯模糊处理</span></span><br><span class="line">    ImagePlus imagePlus = <span class="keyword">new</span> ImagePlus(<span class="string">&quot;tmp&quot;</span>, bi);</span><br><span class="line">    ImageProcessor ip = imagePlus.getProcessor();</span><br><span class="line">    ip.blurGaussian(<span class="number">1.5</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//将高斯模糊后的水印各像素点替换上方计算的原背景色</span></span><br><span class="line">    BufferedImage blurGaussianImage = ip.getBufferedImage();</span><br><span class="line">    <span class="keyword">for</span>(String coordinate : map.keySet()) &#123;</span><br><span class="line">        String[] split = coordinate.split(<span class="string">&quot;_&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> x = bi.getWidth() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">int</span> y = bi.getHeight() - <span class="number">1</span> - Integer.parseInt(split[<span class="number">1</span>]);</span><br><span class="line">        bi.setRGB(x, y, blurGaussianImage.getRGB(x, y));</span><br><span class="line">        <span class="comment">//索性处理一下周边的点</span></span><br><span class="line">        <span class="keyword">if</span>(x - <span class="number">1</span> &gt;= <span class="number">0</span> &amp;&amp; y - <span class="number">1</span> &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            bi.setRGB(x - <span class="number">1</span>, y - <span class="number">1</span>, blurGaussianImage.getRGB(x - <span class="number">1</span>, y - <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(x - <span class="number">1</span> &gt;= <span class="number">0</span> &amp;&amp; y + <span class="number">1</span> &lt; bi.getHeight()) &#123;</span><br><span class="line">            bi.setRGB(x - <span class="number">1</span>, y + <span class="number">1</span>, blurGaussianImage.getRGB(x - <span class="number">1</span>, y + <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(x + <span class="number">1</span> &lt; bi.getWidth() &amp;&amp; y + <span class="number">1</span> &lt; bi.getHeight()) &#123;</span><br><span class="line">            bi.setRGB(x + <span class="number">1</span>, y + <span class="number">1</span>, blurGaussianImage.getRGB(x + <span class="number">1</span>, y + <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(x + <span class="number">1</span> &lt; bi.getWidth() &amp;&amp; y - <span class="number">1</span> &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            bi.setRGB(x + <span class="number">1</span>, y - <span class="number">1</span>, blurGaussianImage.getRGB(x + <span class="number">1</span>, y - <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>最后的效果如下：</p>
+<p><img src="http://file1.xjyhs.com/watermark6.jpg" alt="image"></p>
+<h4 id="该方法仅适用于去处固定像素点的水印，对于比较复杂的水印要增加额外的程序来计算其像素点的位置。上面程序用到了ImageJ框架，maven坐标如下："><a href="#该方法仅适用于去处固定像素点的水印，对于比较复杂的水印要增加额外的程序来计算其像素点的位置。上面程序用到了ImageJ框架，maven坐标如下：" class="headerlink" title="该方法仅适用于去处固定像素点的水印，对于比较复杂的水印要增加额外的程序来计算其像素点的位置。上面程序用到了ImageJ框架，maven坐标如下："></a>该方法仅适用于去处固定像素点的水印，对于比较复杂的水印要增加额外的程序来计算其像素点的位置。上面程序用到了ImageJ框架，maven坐标如下：</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/net.imagej/ij --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.imagej<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ij<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.51w<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+	<p class="sub">Jun 25 2018</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B4%E5%8D%B0%E5%8E%9F%E7%90%86"><span class="toc-text">水印原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E6%96%AD%E8%83%8C%E6%99%AF%E8%89%B2"><span class="toc-text">推断背景色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E4%B8%8D%E9%80%8F%E6%98%8E%E5%BA%A6A"><span class="toc-text">寻找不透明度A</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%8E%9F%E8%83%8C%E6%99%AF%E8%89%B2"><span class="toc-text">恢复原背景色</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%A5%E6%96%B9%E6%B3%95%E4%BB%85%E9%80%82%E7%94%A8%E4%BA%8E%E5%8E%BB%E5%A4%84%E5%9B%BA%E5%AE%9A%E5%83%8F%E7%B4%A0%E7%82%B9%E7%9A%84%E6%B0%B4%E5%8D%B0%EF%BC%8C%E5%AF%B9%E4%BA%8E%E6%AF%94%E8%BE%83%E5%A4%8D%E6%9D%82%E7%9A%84%E6%B0%B4%E5%8D%B0%E8%A6%81%E5%A2%9E%E5%8A%A0%E9%A2%9D%E5%A4%96%E7%9A%84%E7%A8%8B%E5%BA%8F%E6%9D%A5%E8%AE%A1%E7%AE%97%E5%85%B6%E5%83%8F%E7%B4%A0%E7%82%B9%E7%9A%84%E4%BD%8D%E7%BD%AE%E3%80%82%E4%B8%8A%E9%9D%A2%E7%A8%8B%E5%BA%8F%E7%94%A8%E5%88%B0%E4%BA%86ImageJ%E6%A1%86%E6%9E%B6%EF%BC%8Cmaven%E5%9D%90%E6%A0%87%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">该方法仅适用于去处固定像素点的水印，对于比较复杂的水印要增加额外的程序来计算其像素点的位置。上面程序用到了ImageJ框架，maven坐标如下：</span></a></li></ol></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/image/">image</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2018/06/25/2018/1.Sonar/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">用 Maven 使用 Sonar 分析代码质量</span>
+            </a>
+        
+        
+            <a class="next" href="/2018/06/25/2018/3.last_query_cost/">
+                
+                <span class="prev-text">mysql 当前查询的成本——待完善</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

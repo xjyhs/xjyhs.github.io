@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-数组字符输出流CharArrayWriter | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-数组字符输出流CharArrayWriter
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>将数据传输至字符数组，该类经常被用来暂存数据。</p>
+</blockquote>
+<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CharArrayWriter</span> <span class="keyword">extends</span> <span class="title">Writer</span></span></span><br></pre></td></tr></table></figure>
+
+<p>与大多数Writer不同的是，CharArrayWriter直接继承于Writer，而不是OutputStreamWriter<br>这是因为它存储的媒介是字符数组，所以不需要进行字符-&gt;字节的转换</p>
+<span id="more"></span>
+
+<h3 id="成员变量与方法"><a href="#成员变量与方法" class="headerlink" title="成员变量与方法"></a>成员变量与方法</h3><h4 id="writeTo方法"><a href="#writeTo方法" class="headerlink" title="writeTo方法"></a>writeTo方法</h4><p>writeTo方法可以将CharArrayWriter的内容写入另一个字符输出流，使用如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (CharArrayWriter writer = <span class="keyword">new</span> CharArrayWriter();</span><br><span class="line">   FileWriter fileWriter = <span class="keyword">new</span> FileWriter(<span class="string">&quot;./test.data&quot;</span>)) &#123;</span><br><span class="line">  writer.write(<span class="string">&quot;1&quot;</span>);</span><br><span class="line">  writer.write(<span class="string">&quot;2&quot;</span>);</span><br><span class="line">  writer.writeTo(fileWriter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="toCharArray方法"><a href="#toCharArray方法" class="headerlink" title="toCharArray方法"></a>toCharArray方法</h4><p>可以通过toCharArray方法，返回输入到CharArrayWriter的数据副本。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (CharArrayWriter writer = <span class="keyword">new</span> CharArrayWriter()) &#123;</span><br><span class="line">  writer.write(<span class="string">&quot;1&quot;</span>);</span><br><span class="line">  writer.write(<span class="string">&quot;2&quot;</span>);</span><br><span class="line">  <span class="keyword">char</span>[] data = writer.toCharArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+    </div>
+	<p class="sub">Nov 18 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%AE%9A%E4%B9%89"><span class="toc-text">类定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E4%B8%8E%E6%96%B9%E6%B3%95"><span class="toc-text">成员变量与方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#writeTo%E6%96%B9%E6%B3%95"><span class="toc-text">writeTo方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#toCharArray%E6%96%B9%E6%B3%95"><span class="toc-text">toCharArray方法</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2017/03/25/2017/2.spring-boot-devtools/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">spring-boot-devtools</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/11/18/IO/24.CharArrayReader/">
+                
+                <span class="prev-text">io-数组字符输入流CharArrayReader</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

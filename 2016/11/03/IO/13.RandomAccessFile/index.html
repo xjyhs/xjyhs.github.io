@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-随机访问文件RandomAccessFile | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-随机访问文件RandomAccessFile
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>RandomAccessFile实现了DataOutput, DataInput接口，所以在提供的功能上很像DataInputStream和DataOutputStream的结合体。<br>利用RandomAccessFile可以实现对文件的随机访问、修改文件，该类往往用于多线程下载和断点续传。</p>
+</blockquote>
+<h3 id="RandomAccessFile的基本使用"><a href="#RandomAccessFile的基本使用" class="headerlink" title="RandomAccessFile的基本使用"></a>RandomAccessFile的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(RandomAccessFile file = <span class="keyword">new</span> RandomAccessFile(<span class="string">&quot;./test.data&quot;</span>, <span class="string">&quot;rw&quot;</span>)) &#123;</span><br><span class="line">  <span class="comment">//设置文件偏移量</span></span><br><span class="line">  file.seek(<span class="number">5</span>);</span><br><span class="line">  <span class="comment">//读取数据</span></span><br><span class="line">  <span class="keyword">int</span> b = file.read();</span><br><span class="line">  <span class="comment">//写入数据</span></span><br><span class="line">  file.write(<span class="string">&quot;test&quot;</span>.getBytes());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h4 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h4><p>除了给定文件路径，还可以给定文件对象来创建RandomAccessFile：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">File f = <span class="keyword">new</span> File(<span class="string">&quot;./test&quot;</span>)</span><br><span class="line">RandomAccessFile file = <span class="keyword">new</span> RandomAccessFile(f, <span class="string">&quot;rw&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>第二个参数是指定RandomAccessFile的模式：<br><strong>“r”</strong>    以只读方式打开。调用结果对象的任何 write 方法都将导致抛出 IOException。<br><strong>“rw”</strong>    打开以便读取和写入。如果该文件尚不存在，则尝试创建该文件。<br><strong>“rws”</strong>    打开以便读取和写入，对于 “rw”，还要求对文件的内容或元数据的每个更新都同步写入到底层存储设备。<br><strong>“rwd”</strong>      打开以便读取和写入，对于 “rw”，还要求对文件内容的每个更新都同步写入到底层存储设备。</p>
+<h4 id="seek方法"><a href="#seek方法" class="headerlink" title="seek方法"></a>seek方法</h4><p>设置文件的指针偏移量，偏移量从文件头开始计算，被native修饰，效率很高。设置指针偏移量后，无论读取还是写入操作都会从当前指针偏移量开始操作。</p>
+<h4 id="skipBytes方法"><a href="#skipBytes方法" class="headerlink" title="skipBytes方法"></a>skipBytes方法</h4><p>skipBytes方法与流中的skip功能相似，尝试跳过n个字节，其内部由seek方法实现，效率很高:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">skipBytes</span><span class="params">(<span class="keyword">int</span> n)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">long</span> pos;</span><br><span class="line">   <span class="keyword">long</span> len;</span><br><span class="line">   <span class="keyword">long</span> newpos;</span><br><span class="line">	</span><br><span class="line">   <span class="keyword">if</span> (n &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">//文件指针偏移量</span></span><br><span class="line">   pos = getFilePointer();</span><br><span class="line">   <span class="comment">//文件总长度</span></span><br><span class="line">   len = length();</span><br><span class="line">   <span class="comment">//新指针偏移量</span></span><br><span class="line">   newpos = pos + n;</span><br><span class="line">   <span class="keyword">if</span> (newpos &gt; len) &#123;</span><br><span class="line">       newpos = len;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment">//设置新指针偏移量</span></span><br><span class="line">   seek(newpos);</span><br><span class="line">	</span><br><span class="line">   <span class="comment">/* return the actual number of bytes skipped */</span></span><br><span class="line">   <span class="keyword">return</span> (<span class="keyword">int</span>) (newpos - pos);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取文件当前指针偏移量"><a href="#获取文件当前指针偏移量" class="headerlink" title="获取文件当前指针偏移量"></a>获取文件当前指针偏移量</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(RandomAccessFile file = <span class="keyword">new</span> RandomAccessFile(<span class="string">&quot;./test.data&quot;</span>, <span class="string">&quot;rw&quot;</span>)) &#123;</span><br><span class="line">  <span class="comment">//文件偏移量</span></span><br><span class="line">  <span class="keyword">long</span> filePointer = file.getFilePointer();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RandomAccessFile的用处"><a href="#RandomAccessFile的用处" class="headerlink" title="RandomAccessFile的用处"></a>RandomAccessFile的用处</h3><p>虽然RandomAccessFile可以随机访问文件，但它很少被用来读取或修改文件，实现的DataInput与DataOutput功能也很少被用到，它最大的应用场景在多线程下载和断点续传。</p>
+<h4 id="使用RandomAccessFile实现多线程下载"><a href="#使用RandomAccessFile实现多线程下载" class="headerlink" title="使用RandomAccessFile实现多线程下载"></a>使用RandomAccessFile实现多线程下载</h4><p><strong>简单的模拟一下多线程下载：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">String path = <span class="string">&quot;http://www.xjyhs.com&quot;</span>;</span><br><span class="line"><span class="keyword">final</span> URL url = <span class="keyword">new</span> URL(path);</span><br><span class="line">URLConnection conn = url.openConnection();</span><br><span class="line"><span class="comment">//块长度，单位字节</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> blockLength = <span class="number">1024</span>;</span><br><span class="line"><span class="comment">//获取下载长度</span></span><br><span class="line"><span class="keyword">int</span> contentLength = conn.getContentLength();</span><br><span class="line"><span class="comment">//计算块数量，向上取整</span></span><br><span class="line"><span class="keyword">int</span> blockNum = (<span class="keyword">int</span>) Math.ceil((<span class="keyword">double</span>) contentLength / blockLength);</span><br><span class="line"></span><br><span class="line"><span class="comment">//根据块数量启动相应数量的线程进行多线程下载</span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blockNum; i++) &#123;</span><br><span class="line">  <span class="comment">//当前线程负责的开始字节</span></span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">int</span> start = i * blockLength;</span><br><span class="line">  <span class="comment">//当前线程负责的结束字节</span></span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">int</span> end = (i + <span class="number">1</span>) * blockLength - <span class="number">1</span>;</span><br><span class="line">  <span class="comment">//启动线程</span></span><br><span class="line">  <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          URLConnection conn = <span class="keyword">null</span>;</span><br><span class="line">          <span class="keyword">try</span> &#123;</span><br><span class="line">              conn = url.openConnection();</span><br><span class="line">              <span class="comment">//关键-设置请求开始位置与结束位置</span></span><br><span class="line">              conn.setRequestProperty(<span class="string">&quot;Range&quot;</span>, <span class="string">&quot;bytes=&quot;</span> + start + <span class="string">&quot;-&quot;</span> + end);</span><br><span class="line">              conn.setConnectTimeout(<span class="number">3000</span>);</span><br><span class="line">              conn.setReadTimeout(<span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line">              <span class="comment">//从网络流中读取内容并写入文件</span></span><br><span class="line">              <span class="keyword">try</span>(InputStream in = conn.getInputStream();</span><br><span class="line">                  RandomAccessFile file = <span class="keyword">new</span> RandomAccessFile(<span class="string">&quot;./test.data&quot;</span>, <span class="string">&quot;rw&quot;</span>)) &#123;</span><br><span class="line">                  <span class="comment">//读取数据</span></span><br><span class="line">                  <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[blockLength];</span><br><span class="line">                  <span class="keyword">int</span> num = in.read(b);</span><br><span class="line"></span><br><span class="line">                  <span class="comment">//设置文件偏移量,写入文件</span></span><br><span class="line">                  file.seek(start);</span><br><span class="line">                  file.write(b, <span class="number">0</span> , num);</span><br><span class="line">              &#125;</span><br><span class="line">          &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">              e.printStackTrace();</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>效果如下：<br><img src="http://file1.xjyhs.com/14782216383707.jpg"></p>
+<p>断点续传所有的东西与多线程下载相同，不再演示，实现这两个功能的核心是：</p>
+<ol>
+<li>为http请求设置请求的数据范围”Range”</li>
+<li>利用RandomAccessFile随机访问文件</li>
+</ol>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Nov 03 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#RandomAccessFile%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">RandomAccessFile的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1"><span class="toc-text">创建对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#seek%E6%96%B9%E6%B3%95"><span class="toc-text">seek方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#skipBytes%E6%96%B9%E6%B3%95"><span class="toc-text">skipBytes方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%96%87%E4%BB%B6%E5%BD%93%E5%89%8D%E6%8C%87%E9%92%88%E5%81%8F%E7%A7%BB%E9%87%8F"><span class="toc-text">获取文件当前指针偏移量</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RandomAccessFile%E7%9A%84%E7%94%A8%E5%A4%84"><span class="toc-text">RandomAccessFile的用处</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8RandomAccessFile%E5%AE%9E%E7%8E%B0%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8B%E8%BD%BD"><span class="toc-text">使用RandomAccessFile实现多线程下载</span></a></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/11/04/IO/0.archive/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io笔记导航</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/11/02/IO/12.DataOutputStream/">
+                
+                <span class="prev-text">io-数据输出流DataOutputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

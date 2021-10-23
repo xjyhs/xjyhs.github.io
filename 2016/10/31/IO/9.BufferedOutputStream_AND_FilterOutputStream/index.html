@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-缓冲输出流BufferedOutputStream与FilterOutputStream | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-缓冲输出流BufferedOutputStream与FilterOutputStream
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>BufferedOutputStream继承于FilterOutputStream，它为其它输出流提供了缓冲输出的功能，在本身缓冲区满后才会将数据写入媒介（硬盘、网络等）。<br>它采用装饰模式对其它输出流进行扩展，本身代码非常简短，只有140行。</p>
+</blockquote>
+<h3 id="BufferedOutputStream的基本使用"><a href="#BufferedOutputStream的基本使用" class="headerlink" title="BufferedOutputStream的基本使用"></a>BufferedOutputStream的基本使用</h3><h4 id="为输出流加上缓冲区"><a href="#为输出流加上缓冲区" class="headerlink" title="为输出流加上缓冲区"></a>为输出流加上缓冲区</h4><p>默认缓冲区为8192字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h4 id="指定缓冲区的大小"><a href="#指定缓冲区的大小" class="headerlink" title="指定缓冲区的大小"></a>指定缓冲区的大小</h4><p>缓冲区的大小要合理设置，不要占用太大的空间，最好是1024的整数倍，这样能更高效地利用内置缓冲区的磁盘。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>), <span class="number">10240</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="其它方法"><a href="#其它方法" class="headerlink" title="其它方法"></a>其它方法</h4><p>采用装饰模式，见<a href="14776191839758.html">OutputStream</a></p>
+<h4 id="BufferedOutputStream效率比较"><a href="#BufferedOutputStream效率比较" class="headerlink" title="BufferedOutputStream效率比较"></a>BufferedOutputStream效率比较</h4><p>比较BufferedOutputStream与FileOutputStream，每次写入4个字节，写入10240次，共40k数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//测试BufferedOutputStream，缓冲区默认8192大小</span></span><br><span class="line"><span class="keyword">try</span>(OutputStream outputStream = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;/Users/yunhuang/test1.data&quot;</span>))) &#123;</span><br><span class="line">  <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10240</span>; i++) &#123;</span><br><span class="line">      outputStream.write(bytes);</span><br><span class="line">  &#125;</span><br><span class="line">  outputStream.flush();</span><br><span class="line">  <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">  System.out.println(<span class="string">&quot;BufferedOutputStream:&quot;</span> + (end - start));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试FileOutputStream，没有缓冲区，</span></span><br><span class="line"><span class="keyword">try</span>(OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;/Users/yunhuang/test1.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10240</span>; i++) &#123;</span><br><span class="line">      outputStream.write(bytes);</span><br><span class="line">  &#125;</span><br><span class="line">  outputStream.flush();</span><br><span class="line">  <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">  System.out.println(<span class="string">&quot;FileOutputStream:&quot;</span> + (end - start));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BufferedOutputStream:<span class="number">2</span></span><br><span class="line">FileOutputStream:<span class="number">22</span></span><br></pre></td></tr></table></figure>
+
+<p>由此可以看出，BufferedOutput可以大幅度提高程序的效率，但使用write(byte[] b)一次写入大量数据时（并不推荐这么操作）BufferedOutputStream可能反而会比直接使用FileOutputStream慢</p>
+<h3 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h3><p>装饰模式的标准例子，所有功能调用其装饰的流。</p>
+<p><strong>感觉其close方法非常的帅，之前从没想到过可以这么写：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">try</span> (OutputStream ostream = out) &#123;</span><br><span class="line">       flush();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 31 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#BufferedOutputStream%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">BufferedOutputStream的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E8%BE%93%E5%87%BA%E6%B5%81%E5%8A%A0%E4%B8%8A%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">为输出流加上缓冲区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="toc-text">指定缓冲区的大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E6%96%B9%E6%B3%95"><span class="toc-text">其它方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferedOutputStream%E6%95%88%E7%8E%87%E6%AF%94%E8%BE%83"><span class="toc-text">BufferedOutputStream效率比较</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FilterOutputStream"><span class="toc-text">FilterOutputStream</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/31/IO/8.ByteArrayInputStream/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-byte数组输入流ByteArrayInputStream</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/31/IO/10.ByteArrayOutputStream/">
+                
+                <span class="prev-text">io-byte数组输出流ByteArrayOutputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

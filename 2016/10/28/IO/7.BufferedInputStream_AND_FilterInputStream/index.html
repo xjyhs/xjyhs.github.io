@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>io-缓冲输入流BufferedInputStream与FilterInputStream | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        io-缓冲输入流BufferedInputStream与FilterInputStream
+    </div>
+    <div class="post-content">
+        <blockquote>
+<p>BufferedInputStream继承于FilterInputStream，它为其它的输入流添加了缓冲区的功能，使用BufferedInputStream读取时，可以直接从缓冲区中读取数据。<br>它本身并没有具体实现流的功能，而是采用了装饰模式动态的对其它输入流进行了扩展。</p>
+</blockquote>
+<h3 id="BufferedInputStream的基本使用"><a href="#BufferedInputStream的基本使用" class="headerlink" title="BufferedInputStream的基本使用"></a>BufferedInputStream的基本使用</h3><h4 id="为输入流加上缓冲"><a href="#为输入流加上缓冲" class="headerlink" title="为输入流加上缓冲"></a>为输入流加上缓冲</h4><p>默认缓冲区大小为8192个字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h4 id="指定缓冲区的大小"><a href="#指定缓冲区的大小" class="headerlink" title="指定缓冲区的大小"></a>指定缓冲区的大小</h4><p>建议缓冲区不要设置太大，默认的缓冲区已足够。最好把缓冲区大小设置成1024字节的整数倍，这样能更高效地利用内置缓冲区的磁盘。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>)， <span class="number">10240</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="mark与reset"><a href="#mark与reset" class="headerlink" title="mark与reset"></a>mark与reset</h4><p>使用mark方法做标记后，mark位置及往后的数据都会留在缓冲区，缓冲区的大小会以2倍的速度进行增长，在超过mark方法给定参数后，现有标记自动失效。</p>
+<h4 id="其它方法"><a href="#其它方法" class="headerlink" title="其它方法"></a>其它方法</h4><p>BufferedInputStream使用了装饰模式，除mark与reset外，它装饰了InputStream其它的所有公共方法，但实现要看具体的输入流。</p>
+<h3 id="BufferedInputStream内部详解"><a href="#BufferedInputStream内部详解" class="headerlink" title="BufferedInputStream内部详解"></a>BufferedInputStream内部详解</h3><h4 id="BufferedInputStream的成员变量"><a href="#BufferedInputStream的成员变量" class="headerlink" title="BufferedInputStream的成员变量"></a>BufferedInputStream的成员变量</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//默认的缓冲区大小</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> DEFAULT_BUFFER_SIZE = <span class="number">8192</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//缓冲区大小限制</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> MAX_BUFFER_SIZE = Integer.MAX_VALUE - <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//缓冲区</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">volatile</span> <span class="keyword">byte</span> buf[];</span><br><span class="line"></span><br><span class="line"><span class="comment">//AtomicReferenceFieldUpdater-java的原子更新器，它能对volatile修饰的字段进行原子更新，以保证线程安全。</span></span><br><span class="line"><span class="comment">//使用bufUpdater变量可实现对buffer（缓冲区）原子更新</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span></span><br><span class="line">   AtomicReferenceFieldUpdater&lt;BufferedInputStream, <span class="keyword">byte</span>[]&gt; bufUpdater =</span><br><span class="line">   AtomicReferenceFieldUpdater.newUpdater</span><br><span class="line">   (BufferedInputStream.class,  <span class="keyword">byte</span>[].class, <span class="string">&quot;buf&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//当前缓冲区的有效字节数</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> count;</span><br><span class="line"></span><br><span class="line"><span class="comment">//缓冲区当前操作的位置</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> pos;</span><br><span class="line"></span><br><span class="line"><span class="comment">//最后一次调用mark方法时pos的值</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> markpos = -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//mark方法标记后，允许读取的最大值，超过该值mark所做标记将失效</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> marklimit;</span><br></pre></td></tr></table></figure>
+
+<h4 id="BufferInputStream的核心方法fill"><a href="#BufferInputStream的核心方法fill" class="headerlink" title="BufferInputStream的核心方法fill"></a>BufferInputStream的核心方法fill</h4><p>fill方法会在第一次调用read方法或缓冲区没有可读数据时被调用，它主要实现了批量读取数据至缓冲区的功能，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fill</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">byte</span>[] buffer = getBufIfOpen();</span><br><span class="line">   <span class="comment">//如果没有标记</span></span><br><span class="line">   <span class="keyword">if</span> (markpos &lt; <span class="number">0</span>)</span><br><span class="line">       pos = <span class="number">0</span>;</span><br><span class="line">   <span class="comment">//如果有标记，且缓冲区数据已读完</span></span><br><span class="line">   <span class="keyword">else</span> <span class="keyword">if</span> (pos &gt;= buffer.length)</span><br><span class="line">   		<span class="comment">//如果是新生成的标记（markpos&gt;0）</span></span><br><span class="line">       <span class="keyword">if</span> (markpos &gt; <span class="number">0</span>) &#123;</span><br><span class="line">       		<span class="comment">//标记至缓冲区尾部的长度</span></span><br><span class="line">           <span class="keyword">int</span> sz = pos - markpos;</span><br><span class="line">           <span class="comment">//标记至缓冲区尾部的数据整体前移至缓冲区头部</span></span><br><span class="line">           System.arraycopy(buffer, markpos, buffer, <span class="number">0</span>, sz);</span><br><span class="line">           <span class="comment">//重置当前位置与标记位置</span></span><br><span class="line">           pos = sz;</span><br><span class="line">           markpos = <span class="number">0</span>;</span><br><span class="line">       &#125; </span><br><span class="line">       <span class="comment">//如果缓冲区长度大于等于mark方法设定的最大标记长度，则清空标记</span></span><br><span class="line">       <span class="keyword">else</span> <span class="keyword">if</span> (buffer.length &gt;= marklimit) &#123;</span><br><span class="line">           markpos = -<span class="number">1</span>;   <span class="comment">/* buffer got too big, invalidate mark */</span></span><br><span class="line">           pos = <span class="number">0</span>;        <span class="comment">/* drop buffer contents */</span></span><br><span class="line">       &#125; </span><br><span class="line">       <span class="comment">//如果缓冲区长度大于类设定的最大缓冲区长度（Integer.MAX_VALUE - 8），抛出异常</span></span><br><span class="line">       <span class="keyword">else</span> <span class="keyword">if</span> (buffer.length &gt;= MAX_BUFFER_SIZE) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError(<span class="string">&quot;Required array size too large&quot;</span>);</span><br><span class="line">       &#125; </span><br><span class="line">       <span class="comment">//如果缓冲区长度小于最大缓冲区长度，则扩充缓冲区</span></span><br><span class="line">       <span class="keyword">else</span> &#123;            <span class="comment">/* grow buffer */</span></span><br><span class="line">           <span class="keyword">int</span> nsz = (pos &lt;= MAX_BUFFER_SIZE - pos) ?</span><br><span class="line">                   pos * <span class="number">2</span> : MAX_BUFFER_SIZE;</span><br><span class="line">           <span class="keyword">if</span> (nsz &gt; marklimit)</span><br><span class="line">               nsz = marklimit;</span><br><span class="line">           <span class="keyword">byte</span> nbuf[] = <span class="keyword">new</span> <span class="keyword">byte</span>[nsz];</span><br><span class="line">           System.arraycopy(buffer, <span class="number">0</span>, nbuf, <span class="number">0</span>, pos);</span><br><span class="line">           <span class="comment">//利用反射，对buf对象进行原子更新操作，用心扩充的缓冲区替换老缓冲区</span></span><br><span class="line">           <span class="keyword">if</span> (!bufUpdater.compareAndSet(<span class="keyword">this</span>, buffer, nbuf)) &#123;</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;Stream closed&quot;</span>);</span><br><span class="line">           &#125;</span><br><span class="line">           buffer = nbuf;</span><br><span class="line">       &#125;</span><br><span class="line">  	 <span class="comment">//读取数据至缓冲区</span></span><br><span class="line">   count = pos;</span><br><span class="line">   <span class="keyword">int</span> n = getInIfOpen().read(buffer, pos, buffer.length - pos);</span><br><span class="line">   <span class="keyword">if</span> (n &gt; <span class="number">0</span>)</span><br><span class="line">       count = n + pos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="BufferedInputStream一定能提高效率么？"><a href="#BufferedInputStream一定能提高效率么？" class="headerlink" title="BufferedInputStream一定能提高效率么？"></a>BufferedInputStream一定能提高效率么？</h4><p>从代码中所看到的内容来看，使用BufferedInputStream可以大幅度减少耗时的IO操作、提高输入流读取的速度。但这不是绝对的，在缓冲区大小和批量读取数据大小相差不多时，它的速度应该会慢于直接使用输入流：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//测试BufferedInputStream，设置缓冲区1024大小，每次批量读取1024字节</span></span><br><span class="line"><span class="keyword">try</span>(InputStream inputStream = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test1.data&quot;</span>), <span class="number">1024</span>);) &#123;</span><br><span class="line">  <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">  <span class="keyword">int</span> num = inputStream.read(data);</span><br><span class="line">  <span class="keyword">while</span>(num &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      num = inputStream.read(data);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">  System.out.println(<span class="string">&quot;BufferedInputStream:&quot;</span> + (end - start));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//直接使用文件输入流，每次批量读取1024字节</span></span><br><span class="line"><span class="keyword">try</span>(InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;/Users/yunhuang/test1.data&quot;</span>)) &#123;</span><br><span class="line">  <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">  <span class="keyword">int</span> num = inputStream.read(data);</span><br><span class="line">  <span class="keyword">while</span>(num &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      num = inputStream.read(data);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">  System.out.println(<span class="string">&quot;FileInputStream:&quot;</span> + (end - start));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BufferedInputStream:33</span><br><span class="line">FileInputStream:27</span><br></pre></td></tr></table></figure>
+<p>所以，要不要使用BufferInputStream要看具体场景，如果是间歇性读取数据，或每次读取单个字节，或批量读取数据的大小远小于缓冲区大小时（个人建议：缓冲区大小 / 批量读取数据大小 &gt; 5时），使用BufferedInputStream可以有效提高程序的效率。</p>
+<h3 id="FilterInputStream"><a href="#FilterInputStream" class="headerlink" title="FilterInputStream"></a>FilterInputStream</h3><p>装饰模式的标准例子，所有功能调用其装饰的流。</p>
+<p><strong>注：jdk版本为1.8.0_91</strong></p>
+
+    </div>
+	<p class="sub">Oct 28 2016</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#BufferedInputStream%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="toc-text">BufferedInputStream的基本使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E8%BE%93%E5%85%A5%E6%B5%81%E5%8A%A0%E4%B8%8A%E7%BC%93%E5%86%B2"><span class="toc-text">为输入流加上缓冲</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="toc-text">指定缓冲区的大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mark%E4%B8%8Ereset"><span class="toc-text">mark与reset</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E6%96%B9%E6%B3%95"><span class="toc-text">其它方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BufferedInputStream%E5%86%85%E9%83%A8%E8%AF%A6%E8%A7%A3"><span class="toc-text">BufferedInputStream内部详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferedInputStream%E7%9A%84%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="toc-text">BufferedInputStream的成员变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferInputStream%E7%9A%84%E6%A0%B8%E5%BF%83%E6%96%B9%E6%B3%95fill"><span class="toc-text">BufferInputStream的核心方法fill</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferedInputStream%E4%B8%80%E5%AE%9A%E8%83%BD%E6%8F%90%E9%AB%98%E6%95%88%E7%8E%87%E4%B9%88%EF%BC%9F"><span class="toc-text">BufferedInputStream一定能提高效率么？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FilterInputStream"><span class="toc-text">FilterInputStream</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/io/">io</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2016/10/28/IO/6.FileOutputStream/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">io-文件输出流FileOutputStream</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/10/27/IO/4.FileInputStream/">
+                
+                <span class="prev-text">io-文件输入流FileInputStream</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

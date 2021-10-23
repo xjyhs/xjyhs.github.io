@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+    <div class="posts-wrapper">
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/11/02/IO/12.DataOutputStream/">io-数据输出流DataOutputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>DataOutputStream继承于FilterOutputStream，实现了DataOutput接口<br>它为其它输出流提供了写入java基本数据类型的功能。</p>
+</blockquote>
+<p>###DataOutputStream的基本使用</p>
+<p>####创建对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DataOutputStream out = <span class="keyword">new</span> DataOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p>不建议使用OutputStream作为对象的接收类型，那样将无法使用DataOutputStream的主要功能。</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/11/02/IO/12.DataOutputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/11/02</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/11/02/IO/12.DataOutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/11/01/IO/11.DataInputStream/">io-DataInputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>DataInputStream 数据输入流允许应用程序以与机器无关方式从底层输入流中读取基本 Java 数据类型。<br>DataInputStream是一个FilterInputStream，为其它输入流提供了读取java基本类型的功能。</p>
+</blockquote>
+<h3 id="DataInputStream的基本使用"><a href="#DataInputStream的基本使用" class="headerlink" title="DataInputStream的基本使用"></a>DataInputStream的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(DataInputStream inputStream = <span class="keyword">new</span> DataInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>))) &#123;</span><br><span class="line">  <span class="keyword">int</span> num = inputStream.readInt();</span><br><span class="line">  <span class="keyword">boolean</span> real = inputStream.readBoolean();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注：DataInputStream需要与DataOutputStream配套使用，只能读取DataOutputStream写入的文件，普通的文件无法正常读取。</strong></p>
+<h4 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h4><p>给定需要被装饰的其它输入流：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DataInputStream inputStream = <span class="keyword">new</span> DataInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+<h4 id="读取基本类型数据"><a href="#读取基本类型数据" class="headerlink" title="读取基本类型数据"></a>读取基本类型数据</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> real = inputStream.readBoolean();</span><br><span class="line"><span class="keyword">byte</span> b = inputStream.readByte();</span><br><span class="line"><span class="keyword">short</span> s = inputStream.readShort();</span><br><span class="line"><span class="keyword">char</span> c = inputStream.readChar();</span><br><span class="line"><span class="keyword">int</span> i = inputStream.readInt();</span><br><span class="line"><span class="keyword">long</span> l = inputStream.readLong();</span><br><span class="line"><span class="keyword">float</span> f = inputStream.readFloat();</span><br><span class="line"><span class="keyword">double</span> d = inputStream.readDouble();</span><br></pre></td></tr></table></figure>
+
+<h3 id="DataInputStream中的位运算"><a href="#DataInputStream中的位运算" class="headerlink" title="DataInputStream中的位运算"></a>DataInputStream中的位运算</h3><h4 id="readBoolean"><a href="#readBoolean" class="headerlink" title="readBoolean"></a>readBoolean</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">readBoolean</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   <span class="keyword">int</span> ch = in.read();</span><br><span class="line">   <span class="keyword">if</span> (ch &lt; <span class="number">0</span>)</span><br><span class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> EOFException();</span><br><span class="line">   <span class="keyword">return</span> (ch != <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看出，布尔类型</p>
+
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+                    <span class="date">2016/11/01</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/11/01/IO/11.DataInputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/31/IO/8.ByteArrayInputStream/">io-byte数组输入流ByteArrayInputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>ByteArrayInputStream可以从字节数组中读取数据，在实际开发中这个类用的较少<br>毕竟字节数组我们已经可以直接操作，往往用序列化的方式读取数据</p>
+</blockquote>
+<p><strong>但这个类有一些其它的用途：</strong></p>
+<ol>
+<li>扩展了InputStream基类，使其可以操作字节数组</li>
+<li>起到了与其它流的粘合作用，因为许多操作要求使用流，比如与ObjectInputStream一起使用可以实现java对象的深复制。</li>
+</ol>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/31/IO/8.ByteArrayInputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/31</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/31/IO/8.ByteArrayInputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/31/IO/9.BufferedOutputStream_AND_FilterOutputStream/">io-缓冲输出流BufferedOutputStream与FilterOutputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>BufferedOutputStream继承于FilterOutputStream，它为其它输出流提供了缓冲输出的功能，在本身缓冲区满后才会将数据写入媒介（硬盘、网络等）。<br>它采用装饰模式对其它输出流进行扩展，本身代码非常简短，只有140行。</p>
+</blockquote>
+<h3 id="BufferedOutputStream的基本使用"><a href="#BufferedOutputStream的基本使用" class="headerlink" title="BufferedOutputStream的基本使用"></a>BufferedOutputStream的基本使用</h3><h4 id="为输出流加上缓冲区"><a href="#为输出流加上缓冲区" class="headerlink" title="为输出流加上缓冲区"></a>为输出流加上缓冲区</h4><p>默认缓冲区为8192字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/31/IO/9.BufferedOutputStream_AND_FilterOutputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/31</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/31/IO/9.BufferedOutputStream_AND_FilterOutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/31/IO/10.ByteArrayOutputStream/">io-byte数组输出流ByteArrayOutputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <h1 id="io-byte数组输出流ByteArrayOutputStream"><a href="#io-byte数组输出流ByteArrayOutputStream" class="headerlink" title="io-byte数组输出流ByteArrayOutputStream"></a>io-byte数组输出流ByteArrayOutputStream</h1><blockquote>
+<p>ByteArrayOutputStream可以将数据传输至字节数组，该类经常被用来暂存数据。</p>
+</blockquote>
+<h3 id="ByteArrayOutputStream的基本使用"><a href="#ByteArrayOutputStream的基本使用" class="headerlink" title="ByteArrayOutputStream的基本使用"></a>ByteArrayOutputStream的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] bytes = <span class="string">&quot;test&quot;</span>.getBytes();</span><br><span class="line"><span class="comment">//创建对象</span></span><br><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">	<span class="comment">//写入数据</span></span><br><span class="line">  outputStream.write(bytes);</span><br><span class="line">  <span class="comment">//获取数据副本</span></span><br><span class="line">  <span class="keyword">byte</span>[] data = outputStream.toByteArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是段非常无聊的代码，只是介绍下基本用法，实在想不出更简单的例子。</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/31/IO/10.ByteArrayOutputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/31</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/31/IO/10.ByteArrayOutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/28/IO/5.OutputStream/">io-输出流OutputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>OutputStream是所有输出流的基类，它定义了输出流的基本操作</p>
+</blockquote>
+<h3 id="OutputStream实现的接口"><a href="#OutputStream实现的接口" class="headerlink" title="OutputStream实现的接口"></a>OutputStream实现的接口</h3><p>它实现了Closeable、Flushable两个接口，前者用于描述这是一个可以关闭的数据源和目标，Flushable用于描述这是一个可以刷新的目标，OutputStream和它的子类必须实现close与flush方法。</p>
+<p><strong>close方法：</strong>关闭本对象打开的系统资源。<br><strong>flush方法：</strong>将已缓冲的输出写入底层流。</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/28/IO/5.OutputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/28</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/28/IO/5.OutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/28/IO/6.FileOutputStream/">io-文件输出流FileOutputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>FileOutputSream是最常用的文件写入类，它以文件流的形式进行文件的写入。<br>同FileInputStream，核心的实现都交由了其它语言。</p>
+</blockquote>
+<h3 id="FileOutputStream的基本使用"><a href="#FileOutputStream的基本使用" class="headerlink" title="FileOutputStream的基本使用"></a>FileOutputStream的基本使用</h3><h4 id="覆盖文件"><a href="#覆盖文件" class="headerlink" title="覆盖文件"></a>覆盖文件</h4><p>OutputStream默认覆盖文件，即清空文件原有数据后写入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br></pre></td></tr></table></figure>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/28/IO/6.FileOutputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/28</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/28/IO/6.FileOutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/">io-缓冲输入流BufferedInputStream与FilterInputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>BufferedInputStream继承于FilterInputStream，它为其它的输入流添加了缓冲区的功能，使用BufferedInputStream读取时，可以直接从缓冲区中读取数据。<br>它本身并没有具体实现流的功能，而是采用了装饰模式动态的对其它输入流进行了扩展。</p>
+</blockquote>
+<h3 id="BufferedInputStream的基本使用"><a href="#BufferedInputStream的基本使用" class="headerlink" title="BufferedInputStream的基本使用"></a>BufferedInputStream的基本使用</h3><h4 id="为输入流加上缓冲"><a href="#为输入流加上缓冲" class="headerlink" title="为输入流加上缓冲"></a>为输入流加上缓冲</h4><p>默认缓冲区大小为8192个字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/28</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/27/IO/4.FileInputStream/">io-文件输入流FileInputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>FileInputStream是最常用的操作文件类之一，它以字节流的形式读取文件内容。<br>源码中没看到太多东西，核心的实现交给了其它语言。</p>
+</blockquote>
+<h3 id="FileInputStream的基本使用"><a href="#FileInputStream的基本使用" class="headerlink" title="FileInputStream的基本使用"></a>FileInputStream的基本使用</h3><h4 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h4><p>常用的只有两种构造函数，可根据情况选择合适的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//文件字符串</span></span><br><span class="line">InputStream inputStream1 = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//file对象</span></span><br><span class="line">File file = <span class="keyword">new</span> File(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line">InputStream inputStream2 = <span class="keyword">new</span> FileInputStream(file);</span><br></pre></td></tr></table></figure>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/27/IO/4.FileInputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/27</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/27/IO/4.FileInputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/27/IO/4/">io-文件输入流FileInputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>FileInputStream是最常用的操作文件类之一，它以字节流的形式读取文件内容。<br>源码中没看到太多东西，核心的实现交给了其它语言。</p>
+</blockquote>
+<h3 id="FileInputStream的基本使用"><a href="#FileInputStream的基本使用" class="headerlink" title="FileInputStream的基本使用"></a>FileInputStream的基本使用</h3><h4 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h4><p>常用的只有两种构造函数，可根据情况选择合适的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//文件字符串</span></span><br><span class="line">InputStream inputStream1 = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//file对象</span></span><br><span class="line">File file = <span class="keyword">new</span> File(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line">InputStream inputStream2 = <span class="keyword">new</span> FileInputStream(file);</span><br></pre></td></tr></table></figure>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/27/IO/4/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/27</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/27/IO/4/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+</div>
+<div class="side-bar">
+
+
+    <div class="avator" id="avator">
+    <!--<div class="title">
+        <a href="#" class="text-underline">About Me</a>
+    </div>-->
+		<div class="site-a-logo">
+			<img src="http://file1.xjyhs.com/img/sky.jpg" class="ava-img">
+		</div>
+        <h1 class="title">云荒居</h1>
+        <div class="author">云荒君的小屋</div>
+        <!--<div class="icon-list">
+        <a href="yourweibo"><i class="iconfont icon-weibo icon-item"></i></a>
+        <a href="mailto:youremail"><i class="iconfont icon-email icon-item"></i></a>
+        <a href="yourgithub"><i class="iconfont icon-github icon-item"></i></a>
+        <a href="yourlinkedin"><i class="iconfont icon-linkedin icon-item"></i></a>
+        </div>-->
+    <div id="site-categories" class="side-item ">
+	<div class="side-header">
+	  <h2>标签</h2>
+	</div>
+	<div class="side-content">
+		
+		<p class="cat-list">
+			
+                    <a href="/tags/java/"><strong>java</strong></a>
+			
+                    <a href="/tags/io/"><strong>io</strong></a>
+			
+                    <a href="/tags/maven/"><strong>maven</strong></a>
+			
+                    <a href="/tags/image/"><strong>image</strong></a>
+			
+                    <a href="/tags/mysql/"><strong>mysql</strong></a>
+			
+		</p>
+        
+	</div>
+</div>
+    </div>
+</div>
+
+</section>
+
+    <nav class="page-nav">
+    
+        <a class="prev" href="/page/2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text">Prev</span>
+        </a>
+    
+    
+        <a class="next" href="/page/4/">
+            <span class="next-text">Next</span>
+            <i class="iconfont icon-right"></i>
+        </a>
+    
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

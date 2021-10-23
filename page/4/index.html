@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+    <div class="posts-wrapper">
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/26/2016/try-with-finally/">try-with-finally异常处理</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>本文以流的关闭为例进行try-with-finally异常处理分析</p>
+</blockquote>
+<h3 id="流的关闭"><a href="#流的关闭" class="headerlink" title="流的关闭"></a>流的关闭</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//业务或IO操作</span></span><br><span class="line">......</span><br><span class="line">inputStream.close();</span><br></pre></td></tr></table></figure>
+<p>这是一个典型的错误关闭，在close之前的任何操作都可能发生异常，在异常发生后，将跳出方法，close方法自然无法执行，这就造成了系统资源的泄露。</p>
+<p>为了避免这种问题，往往会使用try-catch-finally这么写：</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/26/2016/try-with-finally/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/26</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/java/">java</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/26/2016/try-with-finally/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/25/2016/try-with-resource/">语法糖try-with-resource</a>
+            </div>
+            <div class="post-content">
+                
+                    <h1 id="语法糖try-with-resource"><a href="#语法糖try-with-resource" class="headerlink" title="语法糖try-with-resource"></a>语法糖try-with-resource</h1><p>try-with-resource是java7新增的特性，它能帮助你更简单地正确关闭资源</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(InputStream in = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>)) &#123;</span><br><span class="line">  <span class="comment">//具体操作</span></span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>try-with-resource并不能万能的关闭所有资源，它只能关闭实现了AutoCloseable接口的对象，在try-with-resource之前，我们是使用try-finally工作的：</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/25/2016/try-with-resource/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/25</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/java/">java</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/25/2016/try-with-resource/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/25/IO/3.InputStream/">io-文件File</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>InputStream类是所有输入流的基类，它定义了输入流的基本操作</p>
+</blockquote>
+<h3 id="InputStream实现的接口"><a href="#InputStream实现的接口" class="headerlink" title="InputStream实现的接口"></a>InputStream实现的接口</h3><p>它实现了Closeable接口，Closeable接口用来描述可以关闭的数据源和目标，在java7及以后版本中，Closeable继承了AutoCloseable，这意味着继承于Closeable的对象可以使用try-with-resource进行资源的自动关闭(见 <a href="14773845321214.html">语法糖try-with-resource</a>)</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/25/IO/3.InputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/25</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/25/IO/3.InputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/24/IO/2.File/">io-文件File</a>
+            </div>
+            <div class="post-content">
+                
+                    <h3 id="File类介绍"><a href="#File类介绍" class="headerlink" title="File类介绍"></a>File类介绍</h3><blockquote>
+<p>File类，可以看做文件系统上的另一层抽象，通过File可以无差别的操作windows，unix各种系统的文件（非单纯意义的文件，也包括目录等）。</p>
+</blockquote>
+<h4 id="可以用File类做什么"><a href="#可以用File类做什么" class="headerlink" title="可以用File类做什么"></a>可以用File类做什么</h4><p>File类可以操作文件的元数据，但不可以直接操作数据，这意味着，可以用File类做到：</p>
+<ol>
+<li>增、删、重命名、移动文件或目录</li>
+<li>读取文件长度，如果是目录，长度随机，与目录相关</li>
+<li>读取目录下文件列表</li>
+<li>检测文件是否存在</li>
+<li>检测某个路径是文件还是目录</li>
+<li>修改文件的权限</li>
+</ol>
+<p><strong>注：操作文件的具体数据需要使用流或channel，File只是操作文件的元数据。</strong></p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/24/IO/2.File/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/24</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/24/IO/2.File/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/23/IO/1.start/">I/O笔记开篇</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>每个java开发都要经历IO的磨难，而我正在途中</p>
+</blockquote>
+<p>####碎碎念<br>写这篇文章时，还没认真的研究过I/O，所以也写不出什么</p>
+<p>只是知道java有io，nio，nio2</p>
+<p>linux有阻塞I/O模型、非阻塞I/O模型、I/O复用模型、信号驱动I/O模型、异步I/O模型</p>
+<p>留下这篇文章，如果能写下I/O系列笔记是个欣慰，如果没坚持下来，也算个耳光</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/23/IO/1.start/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/23</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/23/IO/1.start/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/18/ObjectInjection/">对象注入与线程安全</a>
+            </div>
+            <div class="post-content">
+                
+                    <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>在java web项目中，经常会看到如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XXXController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line">	</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么：多个http请求共用一个request对象，是线程安全的么？一个对象又怎么保证多个http请求不同的数据？</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/18/ObjectInjection/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/18</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/java/">java</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/18/ObjectInjection/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+</div>
+<div class="side-bar">
+
+
+    <div class="avator" id="avator">
+    <!--<div class="title">
+        <a href="#" class="text-underline">About Me</a>
+    </div>-->
+		<div class="site-a-logo">
+			<img src="http://file1.xjyhs.com/img/sky.jpg" class="ava-img">
+		</div>
+        <h1 class="title">云荒居</h1>
+        <div class="author">云荒君的小屋</div>
+        <!--<div class="icon-list">
+        <a href="yourweibo"><i class="iconfont icon-weibo icon-item"></i></a>
+        <a href="mailto:youremail"><i class="iconfont icon-email icon-item"></i></a>
+        <a href="yourgithub"><i class="iconfont icon-github icon-item"></i></a>
+        <a href="yourlinkedin"><i class="iconfont icon-linkedin icon-item"></i></a>
+        </div>-->
+    <div id="site-categories" class="side-item ">
+	<div class="side-header">
+	  <h2>标签</h2>
+	</div>
+	<div class="side-content">
+		
+		<p class="cat-list">
+			
+                    <a href="/tags/java/"><strong>java</strong></a>
+			
+                    <a href="/tags/io/"><strong>io</strong></a>
+			
+                    <a href="/tags/maven/"><strong>maven</strong></a>
+			
+                    <a href="/tags/image/"><strong>image</strong></a>
+			
+                    <a href="/tags/mysql/"><strong>mysql</strong></a>
+			
+		</p>
+        
+	</div>
+</div>
+    </div>
+</div>
+
+</section>
+
+    <nav class="page-nav">
+    
+        <a class="prev" href="/page/3/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text">Prev</span>
+        </a>
+    
+    
+    </nav>
+
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>

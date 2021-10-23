@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" name="referrer" content="never">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>spring-boot-devtools | 云荒居</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">首页</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">归档</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">IO笔记</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        spring-boot-devtools
+    </div>
+    <div class="post-content">
+        <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>通常为提高开发效率，团队会选择一个热启动或热部署的工具，这类工具并不稳定，不建议在生产环境使用，spring-boot-devtools就是一个java热启动插件。</p>
+<h3 id="devtools使用"><a href="#devtools使用" class="headerlink" title="devtools使用"></a>devtools使用</h3><p><strong>maven坐标：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-devtools<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>devtools引入即可使用，这时重启项目，修改或新增一个controller，在idea中ctrl+F9一下，就会看到控制台重启的信息，但是这个重启要快于正常的启动，重启完即可看到代码已经生效。</p>
+<h3 id="devtools原理"><a href="#devtools原理" class="headerlink" title="devtools原理"></a>devtools原理</h3><p>devtools重写了ClassLoader，会改变的类都由它的RestartClassLoader去加载，不会更改的则由AppClassLoader去加载，热重启的过程就是丢弃现有的RestartClassLoader（及其加载的类），重新创建一个RestartClassLoader的过程，由于加载的类比较少，所以启动的速度要快于正常启动。</p>
+<h3 id="devtools的不稳定"><a href="#devtools的不稳定" class="headerlink" title="devtools的不稳定"></a>devtools的不稳定</h3><p>与其它热启动或热重启的方案比较，devtools相对稳定一些，但是会和其它类库产生冲突。<br>目前项目中遇到冲突的类库有<a href="www.mybatis.tk">通用Mapper</a>,<a target="_blank" rel="noopener" href="http://swagger.io/">swagger</a>，这类冲突引起的原因是类库使用的AppClassLoader，在java中只有由同一个ClassLoader加载的类才被认为是相同的，所以会报错一些莫名其妙的问题，比如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.ClassCastException: com.xjyhs.entity.Users cannot be cast to com.xjyhs.entity.Users</span><br></pre></td></tr></table></figure>
+
+<p>devtools的文档比较少，在努力搜索的部分资料后，找到了解决的方案：<br>第一种：排除<br>第二种：指定restartClassLoader加载指定的jar包</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">restart.include.mybatis=tk/mybatis.*</span><br><span class="line">restart.include.companycommonlibs=tk/mybatis.*</span><br></pre></td></tr></table></figure>
+
+
+
+    </div>
+	<p class="sub">Mar 25 2017</p>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        目录
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#devtools%E4%BD%BF%E7%94%A8"><span class="toc-text">devtools使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#devtools%E5%8E%9F%E7%90%86"><span class="toc-text">devtools原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#devtools%E7%9A%84%E4%B8%8D%E7%A8%B3%E5%AE%9A"><span class="toc-text">devtools的不稳定</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/java/">java</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+            <a class="prev" href="/2017/03/25/2017/1.Tomcat_Deploying_web_application_directory/">
+                <i class="iconfont icon-left"></i>
+                <span class="prev-text">生产环境Tomcat启动时卡在INFO:&amp;nbsp;Deploying&amp;nbsp;web&amp;nbsp;application&amp;nbsp;directory</span>
+            </a>
+        
+        
+            <a class="next" href="/2016/11/18/IO/23.CharArrayWriter/">
+                
+                <span class="prev-text">io-数组字符输出流CharArrayWriter</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+	
+<script src="/js/highlight.pack.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+	<script>
+	function fixSidebarHeight(){
+        var w1 = $('.posts').height();
+          var w2 = $('.side-bar').height();
+          if (w1 > w2) { $('.side-bar').height(w1); };
+      }
+      $(function(){
+        fixSidebarHeight();
+      })
+	</script>
+</html>
