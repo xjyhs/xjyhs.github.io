@@ -118,6 +118,41 @@
     
         <article class="post article-entry">
             <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/10/31/IO/10.ByteArrayOutputStream/">io-byte数组输出流ByteArrayOutputStream</a>
+            </div>
+            <div class="post-content">
+                
+                    <h1 id="io-byte数组输出流ByteArrayOutputStream"><a href="#io-byte数组输出流ByteArrayOutputStream" class="headerlink" title="io-byte数组输出流ByteArrayOutputStream"></a>io-byte数组输出流ByteArrayOutputStream</h1><blockquote>
+<p>ByteArrayOutputStream可以将数据传输至字节数组，该类经常被用来暂存数据。</p>
+</blockquote>
+<h3 id="ByteArrayOutputStream的基本使用"><a href="#ByteArrayOutputStream的基本使用" class="headerlink" title="ByteArrayOutputStream的基本使用"></a>ByteArrayOutputStream的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] bytes = <span class="string">&quot;test&quot;</span>.getBytes();</span><br><span class="line"><span class="comment">//创建对象</span></span><br><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">	<span class="comment">//写入数据</span></span><br><span class="line">  outputStream.write(bytes);</span><br><span class="line">  <span class="comment">//获取数据副本</span></span><br><span class="line">  <span class="keyword">byte</span>[] data = outputStream.toByteArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是段非常无聊的代码，只是介绍下基本用法，实在想不出更简单的例子。</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/10/31/IO/10.ByteArrayOutputStream/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/10/31</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/10/31/IO/10.ByteArrayOutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
                 <a class="post-title-link text-underline" href="/2016/10/31/IO/8.ByteArrayInputStream/">io-byte数组输入流ByteArrayInputStream</a>
             </div>
             <div class="post-content">
@@ -183,41 +218,6 @@
 				<div class="more-right right">
                   <span class="comments">
                         <a href="/2016/10/31/IO/9.BufferedOutputStream_AND_FilterOutputStream/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/31/IO/10.ByteArrayOutputStream/">io-byte数组输出流ByteArrayOutputStream</a>
-            </div>
-            <div class="post-content">
-                
-                    <h1 id="io-byte数组输出流ByteArrayOutputStream"><a href="#io-byte数组输出流ByteArrayOutputStream" class="headerlink" title="io-byte数组输出流ByteArrayOutputStream"></a>io-byte数组输出流ByteArrayOutputStream</h1><blockquote>
-<p>ByteArrayOutputStream可以将数据传输至字节数组，该类经常被用来暂存数据。</p>
-</blockquote>
-<h3 id="ByteArrayOutputStream的基本使用"><a href="#ByteArrayOutputStream的基本使用" class="headerlink" title="ByteArrayOutputStream的基本使用"></a>ByteArrayOutputStream的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] bytes = <span class="string">&quot;test&quot;</span>.getBytes();</span><br><span class="line"><span class="comment">//创建对象</span></span><br><span class="line"><span class="keyword">try</span>(ByteArrayOutputStream outputStream = <span class="keyword">new</span> ByteArrayOutputStream()) &#123;</span><br><span class="line">	<span class="comment">//写入数据</span></span><br><span class="line">  outputStream.write(bytes);</span><br><span class="line">  <span class="comment">//获取数据副本</span></span><br><span class="line">  <span class="keyword">byte</span>[] data = outputStream.toByteArray();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这是段非常无聊的代码，只是介绍下基本用法，实在想不出更简单的例子。</p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/10/31/IO/10.ByteArrayOutputStream/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/10/31</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/io/">io</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/10/31/IO/10.ByteArrayOutputStream/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -426,15 +426,15 @@
 		
 		<p class="cat-list">
 			
-                    <a href="/tags/java/"><strong>java</strong></a>
+                    <a href="/tags/mysql/"><strong>mysql</strong></a>
 			
-                    <a href="/tags/io/"><strong>io</strong></a>
+                    <a href="/tags/java/"><strong>java</strong></a>
 			
                     <a href="/tags/maven/"><strong>maven</strong></a>
 			
                     <a href="/tags/image/"><strong>image</strong></a>
 			
-                    <a href="/tags/mysql/"><strong>mysql</strong></a>
+                    <a href="/tags/io/"><strong>io</strong></a>
 			
 		</p>
         
