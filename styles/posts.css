@@ -10,6 +10,8 @@
 }
 .post-title {
   font-size: 28px;
+  line-height: 40px;
+  margin: 20px 0;
   color: #555;
   font-family: 'Montserrat';
 }
@@ -40,6 +42,7 @@
 .read-more {
   color: #bababa;
   font-size: 14px;
+  margin: 20px 0;
   font-family: "freight-text-pro", Georgia, Cambria, "Times New Roman", Times, serif;
 }
 .read-more a {

@@ -28,7 +28,7 @@
         </li>
     
         <li class="menu-item text-underline">
-            <a href="/about/">IO笔记</a>
+            <a href="/2016/11/04/IO/0.archive">IO笔记</a>
         </li>
             
     </ul>
@@ -79,16 +79,8 @@
             </div>
             <div class="post-content">
                 
-                    <h1 id="使用-lombok-让你的代码更易读——待完善"><a href="#使用-lombok-让你的代码更易读——待完善" class="headerlink" title="使用 lombok 让你的代码更易读——待完善"></a>使用 lombok 让你的代码更易读——待完善</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Lombok是一个可以通过注解来减少<strong>代码冗余</strong>让代码更易阅读的插件，比如可以使用@Getter和@Setter注解代替getter、setter方法，Lombok可代替许多重复的代码，下面将一一介绍。  </p>
+                    <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Lombok是一个可以通过注解来减少<strong>代码冗余</strong>让代码更易阅读的插件，比如可以使用@Getter和@Setter注解代替getter、setter方法，Lombok可代替许多重复的代码，下面将一一介绍。  </p>
 <h2 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h2><pre><code>Lombok的原理是通过使用注解在编译时生成对应的代码，因此需要在IDE中安装相应的插件配合使用。
-</code></pre>
-<p>打开File–&gt;Settings–&gt;Plugins搜索lombok，安装Lombok Plugin插件：<br><img src="http://file1.xjyhs.com/15300025868098.jpg"></p>
-<h4 id="添加-Lombok-的-Maven-依赖"><a href="#添加-Lombok-的-Maven-依赖" class="headerlink" title="添加 Lombok 的 Maven 依赖"></a>添加 Lombok 的 Maven 依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.projectlombok/lombok --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="注解简介"><a href="#注解简介" class="headerlink" title="注解简介"></a>注解简介</h2><blockquote>
-<p>安装完插件 并且 添加完<strong>maven依赖</strong>后就可以使用Lombok了，下面简单介绍一下常用的注解:</p>
-</blockquote>
-<h4 id="Data注解"><a href="#Data注解" class="headerlink" title="@Data注解"></a>@Data注解</h4><pre><code>注解在类上；提供类所有属性的 getting 和 setting 方法，此外还提供了equals、canEqual、hashCode、toString 方法
 </code></pre>
                 
             </div>
@@ -230,194 +222,6 @@
 			<p class="sub"></p>
         </article>
     
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2017/03/25/2017/1.Tomcat_Deploying_web_application_directory/">生产环境Tomcat启动时卡在INFO:&amp;nbsp;Deploying&amp;nbsp;web&amp;nbsp;application&amp;nbsp;directory</a>
-            </div>
-            <div class="post-content">
-                
-                    <blockquote>
-<p>阿里的华北区的部分服务器虚拟化的技术更换为kvm，所涉及的服务器被强迫迁移，并更换内外网ip，所在公司没有逃脱魔爪，由于部分服务由java提供，所以晚上被留下应急。</p>
-</blockquote>
-<p>服务器的迁移很快完成，但上去后发现服务无法启动，一直卡在<br>Deploying web application directory ……</p>
-<p>感觉非常熟悉的一幕，但是想不起来哪见过了，检查了jdk的环境，文件的权限，统统没有问题。重新下载一份空的tomcat，启动依然卡主，所以问题必然是出在jdk上，在网上仔细搜了一下，果然找到了原因：</p>
-<blockquote>
-<p>linux或者部分unix系统提供随机数设备是/dev/random 和/dev/urandom ，两个有区别，urandom安全性没有random高，但random需要时间间隔生成随机数。jdk默认调用random。<br>找到jdk1.x.x_xx/jre/lib/security/Java.security文件，在文件中找到securerandom.source这个设置项，将其改为：<br>securerandom.source=file:/dev/./urandom</p>
-</blockquote>
-<p>看到这熟悉的文章，突然想起大概是一年半前测试服务出的一个问题：有一台测试的虚拟机启动项目时要卡住很久才能启动，同样的问题，同样的解决方案-_-#</p>
-<p>好记性不如烂笔头，更何况我这烂记性😭，还是简单的记一下吧。</p>
-
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-                    <span class="date">2017/03/25</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/java/">java</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2017/03/25/2017/1.Tomcat_Deploying_web_application_directory/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2017/03/25/2017/2.spring-boot-devtools/">spring-boot-devtools</a>
-            </div>
-            <div class="post-content">
-                
-                    <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>通常为提高开发效率，团队会选择一个热启动或热部署的工具，这类工具并不稳定，不建议在生产环境使用，spring-boot-devtools就是一个java热启动插件。</p>
-<h3 id="devtools使用"><a href="#devtools使用" class="headerlink" title="devtools使用"></a>devtools使用</h3><p><strong>maven坐标：</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-devtools<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.5.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>devtools引入即可使用，这时重启项目，修改或新增一个controller，在idea中ctrl+F9一下，就会看到控制台重启的信息，但是这个重启要快于正常的启动，重启完即可看到代码已经生效。</p>
-<h3 id="devtools原理"><a href="#devtools原理" class="headerlink" title="devtools原理"></a>devtools原理</h3><p>devtools重写了ClassLoader，会改变的类都由它的RestartClassLoader去加载，不会更改的则由AppClassLoader去加载，热重启的过程就是丢弃现有的RestartClassLoader（及其加载的类），重新创建一个RestartClassLoader的过程，由于加载的类比较少，所以启动的速度要快于正常启动。</p>
-<h3 id="devtools的不稳定"><a href="#devtools的不稳定" class="headerlink" title="devtools的不稳定"></a>devtools的不稳定</h3><p>与其它热启动或热重启的方案比较，devtools相对稳定一些，但是会和其它类库产生冲突。<br>目前项目中遇到冲突的类库有<a href="www.mybatis.tk">通用Mapper</a>,<a target="_blank" rel="noopener" href="http://swagger.io/">swagger</a>，这类冲突引起的原因是类库使用的AppClassLoader，在java中只有由同一个ClassLoader加载的类才被认为是相同的，所以会报错一些莫名其妙的问题，比如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.ClassCastException: com.xjyhs.entity.Users cannot be cast to com.xjyhs.entity.Users</span><br></pre></td></tr></table></figure>
-
-<p>devtools的文档比较少，在努力搜索的部分资料后，找到了解决的方案：<br>第一种：排除<br>第二种：指定restartClassLoader加载指定的jar包</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">restart.include.mybatis=tk/mybatis.*</span><br><span class="line">restart.include.companycommonlibs=tk/mybatis.*</span><br></pre></td></tr></table></figure>
-
-
-
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-                    <span class="date">2017/03/25</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/java/">java</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2017/03/25/2017/2.spring-boot-devtools/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/18/IO/23.CharArrayWriter/">io-数组字符输出流CharArrayWriter</a>
-            </div>
-            <div class="post-content">
-                
-                    <blockquote>
-<p>将数据传输至字符数组，该类经常被用来暂存数据。</p>
-</blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CharArrayWriter</span> <span class="keyword">extends</span> <span class="title">Writer</span></span></span><br></pre></td></tr></table></figure>
-
-<p>与大多数Writer不同的是，CharArrayWriter直接继承于Writer，而不是OutputStreamWriter<br>这是因为它存储的媒介是字符数组，所以不需要进行字符-&gt;字节的转换</p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/11/18/IO/23.CharArrayWriter/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/11/18</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/io/">io</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/11/18/IO/23.CharArrayWriter/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/18/IO/24.CharArrayReader/">io-数组字符输入流CharArrayReader</a>
-            </div>
-            <div class="post-content">
-                
-                    <blockquote>
-<p>从字符数组中读取数据。</p>
-</blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CharArrayReader</span> <span class="keyword">extends</span> <span class="title">Reader</span> </span></span><br></pre></td></tr></table></figure>
-
-<p>CharArrayReader直接继承于Reader，而不是InputStreamReader<br>这是因为它读取的就是字符数组，不需要进行字节-&gt;字符的转换</p>
-<h3 id="成员变量与方法"><a href="#成员变量与方法" class="headerlink" title="成员变量与方法"></a>成员变量与方法</h3><p>类非常简单，略</p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/11/18/IO/24.CharArrayReader/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/11/18</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/io/">io</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/11/18/IO/24.CharArrayReader/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/14/IO/21.BufferedReader/">io-缓冲输入字符流BufferedReader</a>
-            </div>
-            <div class="post-content">
-                
-                    <blockquote>
-<p>装饰其它字符输入流，从中读取并缓冲字符数据，以实现字符、数组和行的高效读取。<br>使用BufferedReader可以降低文件读取的次数，大幅度提高io的性能，建议使用BufferedReader包装其它Reader。</p>
-</blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BufferedReader</span> <span class="keyword">extends</span> <span class="title">Reader</span></span></span><br></pre></td></tr></table></figure>
-<p>直接继承于<a href="14786827784337.html?_blank">Reader</a>。</p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/11/14/IO/21.BufferedReader/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/11/14</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/io/">io</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/11/14/IO/21.BufferedReader/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
 </div>
 <div class="side-bar">
 
@@ -445,18 +249,48 @@
 		
 		<p class="cat-list">
 			
-                    <a href="/tags/mysql/"><strong>mysql</strong></a>
+                    <a href="/tags/mysql/"><strong>mysql</strong><span class="tag-list-count">2</span></a>
 			
-                    <a href="/tags/java/"><strong>java</strong></a>
+                    <a href="/tags/java/"><strong>java</strong><span class="tag-list-count">6</span></a>
 			
-                    <a href="/tags/maven/"><strong>maven</strong></a>
+                    <a href="/tags/maven/"><strong>maven</strong><span class="tag-list-count">1</span></a>
 			
-                    <a href="/tags/image/"><strong>image</strong></a>
+                    <a href="/tags/image/"><strong>image</strong><span class="tag-list-count">1</span></a>
 			
-                    <a href="/tags/io/"><strong>io</strong></a>
+                    <a href="/tags/io/"><strong>io</strong><span class="tag-list-count">25</span></a>
 			
 		</p>
         
+	</div>
+</div>
+<div id="site-categories" class="side-item">
+	<div class="side-header">
+	  <h2>最近文章</h2>
+	</div>
+	<div class="side-content">
+		<ul class="posts-list">
+	      
+			  <li class="post">
+				<a href="/2021/10/22/Mysql-sequence/">MySQL流水号</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/26/2018/4.lombok/">使用 lombok 让你的代码更易读——待完善</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/25/2018/1.Sonar/">用 Maven 使用 Sonar 分析代码质量</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/25/2018/2.Watermark/">去除图片简单的水印</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/25/2018/3.last_query_cost/">mysql 当前查询的成本——待完善</a>
+			  </li>
+		  
+		</ul>
 	</div>
 </div>
     </div>

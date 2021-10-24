@@ -28,7 +28,7 @@
         </li>
     
         <li class="menu-item text-underline">
-            <a href="/about/">IO笔记</a>
+            <a href="/2016/11/04/IO/0.archive">IO笔记</a>
         </li>
             
     </ul>
@@ -41,91 +41,23 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/26/2016/try-with-finally/">try-with-finally异常处理</a>
+                <a class="post-title-link text-underline" href="/2016/11/11/IO/20.FileWriter/">io-FileWriter</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>本文以流的关闭为例进行try-with-finally异常处理分析</p>
+<p>以字符流的形式将内容写入文件。</p>
 </blockquote>
-<h3 id="流的关闭"><a href="#流的关闭" class="headerlink" title="流的关闭"></a>流的关闭</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//业务或IO操作</span></span><br><span class="line">......</span><br><span class="line">inputStream.close();</span><br></pre></td></tr></table></figure>
-<p>这是一个典型的错误关闭，在close之前的任何操作都可能发生异常，在异常发生后，将跳出方法，close方法自然无法执行，这就造成了系统资源的泄露。</p>
-<p>为了避免这种问题，往往会使用try-catch-finally这么写：</p>
+<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileWriter</span> <span class="keyword">extends</span> <span class="title">OutputStreamWriter</span></span></span><br></pre></td></tr></table></figure>
+<p>该类继承于OutputStreamWriter。</p>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/10/26/2016/try-with-finally/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/11/11/IO/20.FileWriter/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/10/26</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/java/">java</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/10/26/2016/try-with-finally/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/25/2016/try-with-resource/">语法糖try-with-resource</a>
-            </div>
-            <div class="post-content">
-                
-                    <h1 id="语法糖try-with-resource"><a href="#语法糖try-with-resource" class="headerlink" title="语法糖try-with-resource"></a>语法糖try-with-resource</h1><p>try-with-resource是java7新增的特性，它能帮助你更简单地正确关闭资源</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(InputStream in = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>)) &#123;</span><br><span class="line">  <span class="comment">//具体操作</span></span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>try-with-resource并不能万能的关闭所有资源，它只能关闭实现了AutoCloseable接口的对象，在try-with-resource之前，我们是使用try-finally工作的：</p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/10/25/2016/try-with-resource/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/10/25</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/java/">java</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/10/25/2016/try-with-resource/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/25/IO/3.InputStream/">io-文件File</a>
-            </div>
-            <div class="post-content">
-                
-                    <blockquote>
-<p>InputStream类是所有输入流的基类，它定义了输入流的基本操作</p>
-</blockquote>
-<h3 id="InputStream实现的接口"><a href="#InputStream实现的接口" class="headerlink" title="InputStream实现的接口"></a>InputStream实现的接口</h3><p>它实现了Closeable接口，Closeable接口用来描述可以关闭的数据源和目标，在java7及以后版本中，Closeable继承了AutoCloseable，这意味着继承于Closeable的对象可以使用try-with-resource进行资源的自动关闭(见 <a href="14773845321214.html">语法糖try-with-resource</a>)</p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/10/25/IO/3.InputStream/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/10/25</span>
+                    <span class="date">2016/11/11</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
@@ -135,7 +67,7 @@
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/10/25/IO/3.InputStream/#disqus_thread">comments</a>
+                        <a href="/2016/11/11/IO/20.FileWriter/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -144,68 +76,24 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/24/IO/2.File/">io-文件File</a>
-            </div>
-            <div class="post-content">
-                
-                    <h3 id="File类介绍"><a href="#File类介绍" class="headerlink" title="File类介绍"></a>File类介绍</h3><blockquote>
-<p>File类，可以看做文件系统上的另一层抽象，通过File可以无差别的操作windows，unix各种系统的文件（非单纯意义的文件，也包括目录等）。</p>
-</blockquote>
-<h4 id="可以用File类做什么"><a href="#可以用File类做什么" class="headerlink" title="可以用File类做什么"></a>可以用File类做什么</h4><p>File类可以操作文件的元数据，但不可以直接操作数据，这意味着，可以用File类做到：</p>
-<ol>
-<li>增、删、重命名、移动文件或目录</li>
-<li>读取文件长度，如果是目录，长度随机，与目录相关</li>
-<li>读取目录下文件列表</li>
-<li>检测文件是否存在</li>
-<li>检测某个路径是文件还是目录</li>
-<li>修改文件的权限</li>
-</ol>
-<p><strong>注：操作文件的具体数据需要使用流或channel，File只是操作文件的元数据。</strong></p>
-                
-            </div>
-			<div class="read-more clearfix">
-                <div class="more-left left">
-				   
-						<a href="/2016/10/24/IO/2.File/">Read more</a>&nbsp;&nbsp; 
-				   
-                    <span class="date">2016/10/24</span>
-					
-					<span>posted in&nbsp;</span> 
-					 
-						<span class="posted-in"><a href="/tags/io/">io</a></span>
-					 
-					
-				</div>
-				<div class="more-right right">
-                  <span class="comments">
-                        <a href="/2016/10/24/IO/2.File/#disqus_thread">comments</a>
-                  </span>
-                </div>
-			</div>
-			<p class="sub"></p>
-        </article>
-    
-        <article class="post article-entry">
-            <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/23/IO/1.start/">I/O笔记开篇</a>
+                <a class="post-title-link text-underline" href="/2016/11/09/IO/15.Reader/">io-字符输入流Reader</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>每个java开发都要经历IO的磨难，而我正在途中</p>
+<p>读取字符流的抽象类<br>Reader定义了在流中读取字符的功能。</p>
 </blockquote>
-<p>####碎碎念<br>写这篇文章时，还没认真的研究过I/O，所以也写不出什么</p>
-<p>只是知道java有io，nio，nio2</p>
-<p>linux有阻塞I/O模型、非阻塞I/O模型、I/O复用模型、信号驱动I/O模型、异步I/O模型</p>
-<p>留下这篇文章，如果能写下I/O系列笔记是个欣慰，如果没坚持下来，也算个耳光</p>
+<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Reader</span> <span class="keyword">implements</span> <span class="title">Readable</span>, <span class="title">Closeable</span></span></span><br></pre></td></tr></table></figure>
+
+<p>Reader是一个抽象类，它定义了所有Reader的主要功能，实现了Readable，Closeable两个接口。<br>Readable：是为java5中为nio扩展的一个接口，它使Reader可以将数据读取到java.nio.CharBuffer中<br>Closeable：java5中增加的接口，描述这是可以关闭的资源，用于资源的自动关闭（try-with-resource）</p>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/10/23/IO/1.start/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/11/09/IO/15.Reader/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/10/23</span>
+                    <span class="date">2016/11/09</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
@@ -215,7 +103,7 @@
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/10/23/IO/1.start/#disqus_thread">comments</a>
+                        <a href="/2016/11/09/IO/15.Reader/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -224,31 +112,101 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/10/18/ObjectInjection/">对象注入与线程安全</a>
+                <a class="post-title-link text-underline" href="/2016/11/07/IO/14.ObjectOutputStream/">io-对象输出流ObjectOutputStream</a>
             </div>
             <div class="post-content">
                 
-                    <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>在java web项目中，经常会看到如下代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XXXController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line">	</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>那么：多个http请求共用一个request对象，是线程安全的么？一个对象又怎么保证多个http请求不同的数据？</p>
+                    <blockquote>
+<p>ObjectOutputStream可以将java基本数据类型或实现了序列化接口（Serializable）的对象写入其它输出流。如果配合FileOutputStream可以将对象写入磁盘，实现对象的持久化存储；如果配合网络流，则可以实现对象的网络传输。</p>
+<p>从功能上看，它是一个FilterOutputStream，因为它为其它输出流提供了输出对象的功能，但是实际上它并没有实现FilterOutputStream接口，而是继承了OutputStream（奇葩的感觉）。</p>
+</blockquote>
+<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ObjectOutputStream</span> <span class="keyword">extends</span> <span class="title">OutputStream</span> <span class="keyword">implements</span> <span class="title">ObjectOutput</span>, <span class="title">ObjectStreamConstants</span></span></span><br></pre></td></tr></table></figure>
+
+<p>ObjectOutput扩展了DataOutput接口，除了输出java基本数据类型，还增加了输出对象的功能。<br>ObjectStreamConstants定义了java序列化中的常量值。</p>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/10/18/ObjectInjection/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/11/07/IO/14.ObjectOutputStream/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/10/18</span>
+                    <span class="date">2016/11/07</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
-						<span class="posted-in"><a href="/tags/java/">java</a></span>
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
 					 
 					
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/10/18/ObjectInjection/#disqus_thread">comments</a>
+                        <a href="/2016/11/07/IO/14.ObjectOutputStream/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/11/04/IO/0.archive/">io笔记导航</a>
+            </div>
+            <div class="post-content">
+                
+                    <p>工作两年，对Java IO还是停留在只会用的阶段，到了努力的时候，读一下Java IO的源码，做一下笔记。</p>
+<p>笔记中不会涉及太多的源码，主要讲述java.io包中主要的类、基本用法及使用这些类能做什么，还有读源码中遇到的没想通的问题。</p>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/11/04/IO/0.archive/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/11/04</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/11/04/IO/0.archive/#disqus_thread">comments</a>
+                  </span>
+                </div>
+			</div>
+			<p class="sub"></p>
+        </article>
+    
+        <article class="post article-entry">
+            <div class="post-title">
+                <a class="post-title-link text-underline" href="/2016/11/03/IO/13.RandomAccessFile/">io-随机访问文件RandomAccessFile</a>
+            </div>
+            <div class="post-content">
+                
+                    <blockquote>
+<p>RandomAccessFile实现了DataOutput, DataInput接口，所以在提供的功能上很像DataInputStream和DataOutputStream的结合体。<br>利用RandomAccessFile可以实现对文件的随机访问、修改文件，该类往往用于多线程下载和断点续传。</p>
+</blockquote>
+<h3 id="RandomAccessFile的基本使用"><a href="#RandomAccessFile的基本使用" class="headerlink" title="RandomAccessFile的基本使用"></a>RandomAccessFile的基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>(RandomAccessFile file = <span class="keyword">new</span> RandomAccessFile(<span class="string">&quot;./test.data&quot;</span>, <span class="string">&quot;rw&quot;</span>)) &#123;</span><br><span class="line">  <span class="comment">//设置文件偏移量</span></span><br><span class="line">  file.seek(<span class="number">5</span>);</span><br><span class="line">  <span class="comment">//读取数据</span></span><br><span class="line">  <span class="keyword">int</span> b = file.read();</span><br><span class="line">  <span class="comment">//写入数据</span></span><br><span class="line">  file.write(<span class="string">&quot;test&quot;</span>.getBytes());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                
+            </div>
+			<div class="read-more clearfix">
+                <div class="more-left left">
+				   
+						<a href="/2016/11/03/IO/13.RandomAccessFile/">Read more</a>&nbsp;&nbsp; 
+				   
+                    <span class="date">2016/11/03</span>
+					
+					<span>posted in&nbsp;</span> 
+					 
+						<span class="posted-in"><a href="/tags/io/">io</a></span>
+					 
+					
+				</div>
+				<div class="more-right right">
+                  <span class="comments">
+                        <a href="/2016/11/03/IO/13.RandomAccessFile/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -282,18 +240,48 @@
 		
 		<p class="cat-list">
 			
-                    <a href="/tags/mysql/"><strong>mysql</strong></a>
+                    <a href="/tags/mysql/"><strong>mysql</strong><span class="tag-list-count">2</span></a>
 			
-                    <a href="/tags/java/"><strong>java</strong></a>
+                    <a href="/tags/java/"><strong>java</strong><span class="tag-list-count">6</span></a>
 			
-                    <a href="/tags/maven/"><strong>maven</strong></a>
+                    <a href="/tags/maven/"><strong>maven</strong><span class="tag-list-count">1</span></a>
 			
-                    <a href="/tags/image/"><strong>image</strong></a>
+                    <a href="/tags/image/"><strong>image</strong><span class="tag-list-count">1</span></a>
 			
-                    <a href="/tags/io/"><strong>io</strong></a>
+                    <a href="/tags/io/"><strong>io</strong><span class="tag-list-count">25</span></a>
 			
 		</p>
         
+	</div>
+</div>
+<div id="site-categories" class="side-item">
+	<div class="side-header">
+	  <h2>最近文章</h2>
+	</div>
+	<div class="side-content">
+		<ul class="posts-list">
+	      
+			  <li class="post">
+				<a href="/2021/10/22/Mysql-sequence/">MySQL流水号</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/26/2018/4.lombok/">使用 lombok 让你的代码更易读——待完善</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/25/2018/1.Sonar/">用 Maven 使用 Sonar 分析代码质量</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/25/2018/2.Watermark/">去除图片简单的水印</a>
+			  </li>
+		  
+			  <li class="post">
+				<a href="/2018/06/25/2018/3.last_query_cost/">mysql 当前查询的成本——待完善</a>
+			  </li>
+		  
+		</ul>
 	</div>
 </div>
     </div>
@@ -308,6 +296,11 @@
             <span class="prev-text">Prev</span>
         </a>
     
+    
+        <a class="next" href="/page/5/">
+            <span class="next-text">Next</span>
+            <i class="iconfont icon-right"></i>
+        </a>
     
     </nav>
 

@@ -41,23 +41,23 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/14/IO/22.BufferedWriter/">io-缓冲输出字符流BufferedWriter</a>
+                <a class="post-title-link text-underline" href="/2016/10/28/IO/5.OutputStream/">io-输出流OutputStream</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>装饰其它字符输出流，缓冲输出数据，提供单个字符、数组和字符串的高效写入。<br>使用BufferedWriter可以降低文件写的次数，大幅度提高io的性能，建议使用BufferedWriter包装其它Writer。</p>
+<p>OutputStream是所有输出流的基类，它定义了输出流的基本操作</p>
 </blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BufferedWriter</span> <span class="keyword">extends</span> <span class="title">Writer</span></span></span><br></pre></td></tr></table></figure>
-<p>直接继承于<a href="14788341528769.html?_blank">Writer</a>。</p>
+<h3 id="OutputStream实现的接口"><a href="#OutputStream实现的接口" class="headerlink" title="OutputStream实现的接口"></a>OutputStream实现的接口</h3><p>它实现了Closeable、Flushable两个接口，前者用于描述这是一个可以关闭的数据源和目标，Flushable用于描述这是一个可以刷新的目标，OutputStream和它的子类必须实现close与flush方法。</p>
+<p><strong>close方法：</strong>关闭本对象打开的系统资源。<br><strong>flush方法：</strong>将已缓冲的输出写入底层流。</p>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/11/14/IO/22.BufferedWriter/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/10/28/IO/5.OutputStream/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/11/14</span>
+                    <span class="date">2016/10/28</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
@@ -67,7 +67,7 @@
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/11/14/IO/22.BufferedWriter/#disqus_thread">comments</a>
+                        <a href="/2016/10/28/IO/5.OutputStream/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -76,24 +76,23 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/11/IO/16.InputStreamReader/">io-字节流-&gt;字符流桥梁InputStreamReader</a>
+                <a class="post-title-link text-underline" href="/2016/10/28/IO/6.FileOutputStream/">io-文件输出流FileOutputStream</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>由类名可看出该类聚合了InputStream与Reader，完成了对InputStream的装饰。<br>也是由该类完成了字节到字符的解码，具体的Reader都直接继承于该类而不是Reader。</p>
+<p>FileOutputSream是最常用的文件写入类，它以文件流的形式进行文件的写入。<br>同FileInputStream，核心的实现都交由了其它语言。</p>
 </blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InputStreamReader</span> <span class="keyword">extends</span> <span class="title">Reader</span></span></span><br></pre></td></tr></table></figure>
-
-<p>InputStreamReader继承于Reader，它完成了Reader最主要的功能——字节到字符的解码。</p>
+<h3 id="FileOutputStream的基本使用"><a href="#FileOutputStream的基本使用" class="headerlink" title="FileOutputStream的基本使用"></a>FileOutputStream的基本使用</h3><h4 id="覆盖文件"><a href="#覆盖文件" class="headerlink" title="覆盖文件"></a>覆盖文件</h4><p>OutputStream默认覆盖文件，即清空文件原有数据后写入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br></pre></td></tr></table></figure>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/11/11/IO/16.InputStreamReader/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/10/28/IO/6.FileOutputStream/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/11/11</span>
+                    <span class="date">2016/10/28</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
@@ -103,7 +102,7 @@
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/11/11/IO/16.InputStreamReader/#disqus_thread">comments</a>
+                        <a href="/2016/10/28/IO/6.FileOutputStream/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -112,24 +111,23 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/11/IO/17.FileReader/">io-FileReader</a>
+                <a class="post-title-link text-underline" href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/">io-缓冲输入流BufferedInputStream与FilterInputStream</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>以字符流的形式读取文件内容</p>
+<p>BufferedInputStream继承于FilterInputStream，它为其它的输入流添加了缓冲区的功能，使用BufferedInputStream读取时，可以直接从缓冲区中读取数据。<br>它本身并没有具体实现流的功能，而是采用了装饰模式动态的对其它输入流进行了扩展。</p>
 </blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileReader</span> <span class="keyword">extends</span> <span class="title">InputStreamReader</span></span></span><br></pre></td></tr></table></figure>
-
-<p>该类继承于InputStreamReader。</p>
+<h3 id="BufferedInputStream的基本使用"><a href="#BufferedInputStream的基本使用" class="headerlink" title="BufferedInputStream的基本使用"></a>BufferedInputStream的基本使用</h3><h4 id="为输入流加上缓冲"><a href="#为输入流加上缓冲" class="headerlink" title="为输入流加上缓冲"></a>为输入流加上缓冲</h4><p>默认缓冲区大小为8192个字节：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>));</span><br></pre></td></tr></table></figure>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/11/11/IO/17.FileReader/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/11/11</span>
+                    <span class="date">2016/10/28</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
@@ -139,7 +137,7 @@
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/11/11/IO/17.FileReader/#disqus_thread">comments</a>
+                        <a href="/2016/10/28/IO/7.BufferedInputStream_AND_FilterInputStream/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -148,24 +146,23 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/11/IO/18.Writer/">io-字符输出流Writer</a>
+                <a class="post-title-link text-underline" href="/2016/10/27/IO/4.FileInputStream/">io-文件输入流FileInputStream</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>写入字符流的抽象类<br>Writer定义了向流中写入字符或字符串的功能</p>
+<p>FileInputStream是最常用的操作文件类之一，它以字节流的形式读取文件内容。<br>源码中没看到太多东西，核心的实现交给了其它语言。</p>
 </blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Writer</span> <span class="keyword">implements</span> <span class="title">Appendable</span>, <span class="title">Closeable</span>, <span class="title">Flushable</span></span></span><br></pre></td></tr></table></figure>
-
-<p>Writer是一个抽象类，它定义了所有输出字符流的基本功能。<br>Appendable：是Java5增加的接口，定义追加指定的字符序列。<br>Closeable：java5增加的接口，描述这是可以关闭的资源，用于资源的自动关闭（try-with-resource）。<br>Flushable：java5增加的接口，描述这是一个可以刷新的目标，用于将已缓冲输出写入底层流。</p>
+<h3 id="FileInputStream的基本使用"><a href="#FileInputStream的基本使用" class="headerlink" title="FileInputStream的基本使用"></a>FileInputStream的基本使用</h3><h4 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h4><p>常用的只有两种构造函数，可根据情况选择合适的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//文件字符串</span></span><br><span class="line">InputStream inputStream1 = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//file对象</span></span><br><span class="line">File file = <span class="keyword">new</span> File(<span class="string">&quot;./test.data&quot;</span>);</span><br><span class="line">InputStream inputStream2 = <span class="keyword">new</span> FileInputStream(file);</span><br></pre></td></tr></table></figure>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/11/11/IO/18.Writer/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/10/27/IO/4.FileInputStream/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/11/11</span>
+                    <span class="date">2016/10/27</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
@@ -175,7 +172,7 @@
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/11/11/IO/18.Writer/#disqus_thread">comments</a>
+                        <a href="/2016/10/27/IO/4.FileInputStream/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -184,34 +181,34 @@
     
         <article class="post article-entry">
             <div class="post-title">
-                <a class="post-title-link text-underline" href="/2016/11/11/IO/19.OutputStreamWriter/">io-字符流-&gt;字节流桥梁OutputStreamWriter</a>
+                <a class="post-title-link text-underline" href="/2016/10/26/2016/try-with-finally/">try-with-finally异常处理</a>
             </div>
             <div class="post-content">
                 
                     <blockquote>
-<p>由类名可看出该类聚合了OutputStream与Writer，完成了对OutputStream的装饰。<br>该类完成了字符到字节的编码，具体的Writer都直接继承于该类。</p>
+<p>本文以流的关闭为例进行try-with-finally异常处理分析</p>
 </blockquote>
-<h3 id="类定义"><a href="#类定义" class="headerlink" title="类定义"></a>类定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OutputStreamWriter</span> <span class="keyword">extends</span> <span class="title">Writer</span></span></span><br></pre></td></tr></table></figure>
-
-<p>OutputStreamWriter继承于Writer，它完成了Writer最主要的功能——字符到字节的编码。</p>
+<h3 id="流的关闭"><a href="#流的关闭" class="headerlink" title="流的关闭"></a>流的关闭</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;./test&quot;</span>);</span><br><span class="line"><span class="comment">//业务或IO操作</span></span><br><span class="line">......</span><br><span class="line">inputStream.close();</span><br></pre></td></tr></table></figure>
+<p>这是一个典型的错误关闭，在close之前的任何操作都可能发生异常，在异常发生后，将跳出方法，close方法自然无法执行，这就造成了系统资源的泄露。</p>
+<p>为了避免这种问题，往往会使用try-catch-finally这么写：</p>
                 
             </div>
 			<div class="read-more clearfix">
                 <div class="more-left left">
 				   
-						<a href="/2016/11/11/IO/19.OutputStreamWriter/">Read more</a>&nbsp;&nbsp; 
+						<a href="/2016/10/26/2016/try-with-finally/">Read more</a>&nbsp;&nbsp; 
 				   
-                    <span class="date">2016/11/11</span>
+                    <span class="date">2016/10/26</span>
 					
 					<span>posted in&nbsp;</span> 
 					 
-						<span class="posted-in"><a href="/tags/io/">io</a></span>
+						<span class="posted-in"><a href="/tags/java/">java</a></span>
 					 
 					
 				</div>
 				<div class="more-right right">
                   <span class="comments">
-                        <a href="/2016/11/11/IO/19.OutputStreamWriter/#disqus_thread">comments</a>
+                        <a href="/2016/10/26/2016/try-with-finally/#disqus_thread">comments</a>
                   </span>
                 </div>
 			</div>
@@ -296,13 +293,13 @@
 
     <nav class="page-nav">
     
-        <a class="prev" href="/page/2/">
+        <a class="prev" href="/page/5/">
             <i class="iconfont icon-left"></i>
             <span class="prev-text">Prev</span>
         </a>
     
     
-        <a class="next" href="/page/4/">
+        <a class="next" href="/page/7/">
             <span class="next-text">Next</span>
             <i class="iconfont icon-right"></i>
         </a>
